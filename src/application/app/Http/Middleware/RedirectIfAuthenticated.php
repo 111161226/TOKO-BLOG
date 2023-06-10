@@ -27,6 +27,11 @@ class RedirectIfAuthenticated
             }
         }
 
+        session_start();
+        if (!isset($_SESSION['id'])) {
+            header('Location:/login');
+            exit();
+        }
         return $next($request);
     }
 }
