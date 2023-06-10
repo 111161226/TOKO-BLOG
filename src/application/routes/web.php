@@ -16,3 +16,41 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::group(['middleware' => ['guest']], function () {
+    Route::get('/home', function(){
+        return view('home');
+    });
+    
+    Route::post('/home', function() {
+        return view('upload');
+    });
+    
+    Route::get('/image', function() {
+        return view('image');
+    });
+    
+    Route::get('/remove', function() {
+        return view('delete');
+    });
+    
+    Route::get('/mblog', function() {
+        return view('makeblog');
+    });
+});
+
+Route::get('/login', function() {
+    return view('login');
+});
+
+Route::get('/signup', function() {
+    return view('signup');
+});
+
+Route::post('/login', function() {
+    return view('getuser');
+});
+
+Route::post('/signup', function() {
+    return view('register');
+});
