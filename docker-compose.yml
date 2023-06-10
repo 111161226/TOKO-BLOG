@@ -1,0 +1,59 @@
+version: '3'
+services:
+  #container for ng
+  nginx:
+    image: nginx:1.17-alpine
+    container_name: "sample_nginx"
+    ports:
+      - "8000:80"
+    volumes:
+      - ./src:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+
+  #container for MySQL
+  mysql:
+    container_name: mysql
+    image: mysql:5.7
+    command: --max_allowed_packet=32505856 
+    platform: linux/amd64
+    build:
+      context: ./docker/db
+      dockerfile: Dockerfile
+    volumes:
+      - ./docker/db/sql:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: mysql
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+
+  #container for phpMyAdmin
+  phpmyadmin:
+    container_name: phpMyAdmin
+    depends_on:
+      - mysql
+    platform: linux/amd64
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+    restart: always
+    ports:
+      - "80:80"
+
+  #container for php
+  php:
+    container_name: php-apache
+    build: ./docker/php
+    volumes:
+      - ./src:/var/www
+    ports:
+      - 8080:80
+    depends_on:
+      - mysql
