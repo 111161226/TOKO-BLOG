@@ -13,9 +13,9 @@ $stmt->bindValue(':name', $name);
 $stmt->execute();
 $member = $stmt->fetch();
 if ($member['user_name'] === $name) {
-    $msg = 'username is already taken';
-    $err_msg = $msg;
-    $link = 'Location:/signup';
+    $err_msg = 'username is already taken';
+    echo($err_msg);
+    exit();
 } else {
     //if not registered same user_name, insert new user data 
     $sql = "INSERT INTO users(user_id, user_name, password) VALUES (:userId, :name, :pass)";

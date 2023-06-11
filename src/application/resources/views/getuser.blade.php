@@ -18,12 +18,12 @@ $member = $stmt->fetch();
 if (password_verify($pass, $member['password'])) {
     $_SESSION['id'] = $member['user_id'];
     $_SESSION['name'] = $member['user_name'];
-    $msg = 'ログインしました。';
+    $msg = 'You success login';
     $link = 'Location:/home';
 } else {
-    $msg = 'ユーザー名もしくはパスワードが間違っています。';
-    $err_msg = $msg;
-    $link = 'Location:/login';
+    $err_msg = 'You made mistakes on username or password';
+    echo($err_msg);
+    exit();
 }
 header($link);
 echo($msg);
