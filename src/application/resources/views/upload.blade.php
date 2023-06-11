@@ -23,14 +23,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             //insert image into db
             if ($err_msg == '') {
-                $sql = 'INSERT INTO images(image_name, image_type, image_content, image_size, created_at)
-                        VALUES (:image_name, :image_type, :image_content, :image_size, now())';
-                $stmt = $pdo->prepare($sql);
-                $stmt->bindValue(':image_name', $name, PDO::PARAM_STR);
-                $stmt->bindValue(':image_type', $type, PDO::PARAM_STR);
-                $stmt->bindValue(':image_content', $content, PDO::PARAM_STR);
-                $stmt->bindValue(':image_size', $size, PDO::PARAM_INT);
-                $stmt->execute();
+                //check error
+                try {
+                    $sql = 'INSERT INTO images(image_name, image_type, image_content, image_size, created_at)
+                            VALUES (:image_name, :image_type, :image_content, :image_size, now())';
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->bindValue(':image_name', $name, PDO::PARAM_STR);
+                    $stmt->bindValue(':image_type', $type, PDO::PARAM_STR);
+                    $stmt->bindValue(':image_content', $content, PDO::PARAM_STR);
+                    $stmt->bindValue(':image_size', $size, PDO::PARAM_INT);
+                    $stmt->execute();
+                } catch(Exception $error){
+                    echo "failed to upload file" . $error->getMessage();
+                    exit();
+                }
             }
         }
 

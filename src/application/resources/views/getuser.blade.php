@@ -8,11 +8,16 @@ $pass = $_POST['pass'];
 $pdo = connectDB();
 
 //check user can login
-$sql = "SELECT * FROM users WHERE user_name = :name";
-$stmt = $pdo->prepare($sql);
-$stmt->bindValue(':name', $name);
-$stmt->execute();
-$member = $stmt->fetch();
+try {
+    $sql = "SELECT * FROM users WHERE user_name = :name";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':name', $name);
+    $stmt->execute();
+    $member = $stmt->fetch();
+} catch(Exception $error){
+    echo "failed to login" . $error->getMessage();
+    exit();
+}
 
 //check the password is correct
 if (password_verify($pass, $member['password'])) {
