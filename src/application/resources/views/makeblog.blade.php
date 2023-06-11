@@ -11,18 +11,20 @@
 
 <div class="container bg-success">
     <div class="d-flex align-items-center justify-content-center" height="auto">
-    <form name="artible_add" method="post" enctype="multipart/form-data">
-        @csrf
-        <h1 class="text-center"> ブログ作成</h1><br>
-        <p>カテゴリ：<input name="category" type="text" required>
-        <p>タイトル：<input name="title" type="text" required>
-        <p>サムネイル： <input name="thumnail" type="file" accept=".jpg,.jpeg,.png" required onchange="previewImage(this);">
-        <br>
-        <p class="text-center">
-            <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="max-width:200px;">
-        </p>
-        <p>本文：<br><textarea name="text" cols="50" rows="50" required></textarea>
-        <p><input type="submit" class="btn btn-primary" value="登録">
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group">    
+            @csrf
+            <h1 class="text-center"> ブログ作成</h1><br>
+            <p>カテゴリ：<input name="category" type="text" required>
+            <p>タイトル：<input name="title" type="text" required>
+            <p>サムネイル： <input name="thumnail" type="file" accept=".jpg,.jpeg,.png" required onchange="previewImage(this);">
+            <br>
+            <p class="text-center">
+                <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="max-width:200px;">
+            </p>
+            <p>本文：<br><textarea name="text" cols="50" rows="50" required></textarea>
+            <p><input type="submit" class="btn btn-primary" value="登録">
+        </div>
     </form>
     </div>
 </div>
