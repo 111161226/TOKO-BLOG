@@ -22,7 +22,7 @@
             <p class="text-center">
                 <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="max-width:200px;">
             </p>
-            <p>本文：<br><textarea name="text" cols="50" rows="50" required></textarea>
+            <p>本文：<br><textarea name="content" cols="50" rows="50" required></textarea>
             <p><input type="submit" class="btn btn-primary" value="登録">
         </div>
     </form>
