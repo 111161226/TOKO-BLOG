@@ -6,7 +6,7 @@ $pdo = connectDB();
 try{
     $sql = 'SELECT * FROM images WHERE image_id = :image_id LIMIT 1';
     $stmt = $pdo->prepare($sql);
-    $stmt->bindValue(':image_id', (int)$_GET['id'], PDO::PARAM_INT);
+    $stmt->bindValue(':image_id', $_GET['id'], PDO::PARAM_STR);
     $stmt->execute();
     $image = $stmt->fetch();
 } catch(Exception $error){

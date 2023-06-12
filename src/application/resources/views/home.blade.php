@@ -108,7 +108,7 @@ $images = $stmt->fetchAll();
         <div class="carousel-inner">
             <?php for ($i = 0; $i < count($images); $i++): ?>
                 <div class="carousel-item <?php if ($i == 0) echo 'active'; ?>">
-                <img src="image.php?id=<?= $images[$i]['image_id']; ?>" class="d-block w-100">
+                <img src="image?id=<?= $images[$i]['image_id']; ?>" class="d-block w-100">
                 </div>
             <?php endfor; ?>
         </div>
