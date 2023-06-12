@@ -30,37 +30,47 @@ if (isset ($_POST['title']) && isset ($_POST['content']) && isset ($_POST['categ
 
     //check the category is new
     try {
-        $que = "SELECT COUNT(*) FROM `category_list` WHERE category = :category";
+        $que = "SELECT * FROM `category_list` WHERE category = :category";
         $stmt = $pdo->prepare($que);
         $stmt->bindValue(':category', $category);
         $stmt->execute();
-        $res = $stmt->fetch();
-        $stmt = null;
-        if (count($res) == 0) {
-            $que = "INSERT INTO category_list (category) VALUES (:category)";
-            $stmt = $pdo->prepare($que);
-            $stmt->bindValue(':category', $category, PDO::PARAM_STR);
-            $stmt->execute();
-            $stmt = null;
-            echo "カテゴリーを追加しました。";
-        }
+        $res = $stmt->fetch(); 
     }
     catch (Exception $error) {
         echo "カテゴリーの登録失敗：" . $error->getMessage();
         exit();
     }
 
+    //get category id
+    if (Count($res) == 0) {
+        try {
+            $stmt = null;
+            $que = "INSERT INTO category_list (category) VALUES (:category)";
+            $stmt = $pdo->prepare($que);
+            $stmt->bindValue(':category', $category, PDO::PARAM_STR);
+            $stmt->execute();
+            $stmt = null;
+            echo "カテゴリーを追加しました。";
+            $cid = mysql_insert_id();
+        } catch (Exception $error) {
+            echo "can't get category id" . $error->getMessage();
+            exit();
+        }
+    } else {
+        $cid = $res['c_id'];
+    }
+
     //add blog to db
     try {
         $que = "INSERT INTO `blogs` (`blog_id`, `title`, `content`, `created_at`, `thumnail_id`, `c_id`) 
-                VALUES (:bid, :title, :content, now(), :tid, (SELECT `c_id` FROM `category_list` WHERE `category` = :category))";
+                VALUES (:bid, :title, :content, now(), :tid, :cid)";
         $stmt = $pdo->prepare($que);
         $bid = uniqid('',true);
         $tid = uniqid('',true);
         $stmt->bindValue(':bid', $bid, PDO::PARAM_STR);
         $stmt->bindValue(':title', $title, PDO::PARAM_STR);
         $stmt->bindValue(':content', $content, PDO::PARAM_STR);
-        $stmt->bindValue(':category', $category, PDO::PARAM_STR);
+        $stmt->bindValue(':cid', $cid, PDO::PARAM_STR);
         $stmt->bindValue(':tid', $tid, PDO::PARAM_STR);
         $stmt->execute();
         $stmt = null;
