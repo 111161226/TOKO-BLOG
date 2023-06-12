@@ -25,9 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($err_msg == '') {
                 //check error
                 try {
-                    $sql = 'INSERT INTO images(image_name, image_type, image_content, image_size, created_at)
-                            VALUES (:image_name, :image_type, :image_content, :image_size, now())';
+                    $sql = 'INSERT INTO images(image_id, image_name, image_type, image_content, image_size, created_at)
+                            VALUES (:image_id, :image_name, :image_type, :image_content, :image_size, now())';
                     $stmt = $pdo->prepare($sql);
+                    $tid = uniqid('',true);
+                    $stmt->bindValue(':image_id', $tid, PDO::PARAM_STR);
                     $stmt->bindValue(':image_name', $name, PDO::PARAM_STR);
                     $stmt->bindValue(':image_type', $type, PDO::PARAM_STR);
                     $stmt->bindValue(':image_content', $content, PDO::PARAM_STR);
