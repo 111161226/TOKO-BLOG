@@ -2,7 +2,7 @@
 DROP TABLE IF EXISTS `images`;
 
 CREATE TABLE `images` (
-  `image_id` int NOT NULL AUTO_INCREMENT,
+  `image_id` VARCHAR(23) NOT NULL,
   `image_name` varchar(256) NOT NULL,
   `image_type` varchar(64) NOT NULL,
   `image_content` MEDIUMBLOB,
@@ -34,14 +34,14 @@ CREATE TABLE `category_list` (
 ) DEFAULT CHARSET=utf8mb4;
 
 /* table for blog*/
-DROP TABLE IF EXISTS `blog`;
+DROP TABLE IF EXISTS `blogs`;
 
-CREATE TABLE `blog` (
+CREATE TABLE `blogs` (
   `blog_id` VARCHAR(23) NOT NULL,
   `title` VARCHAR(100) NOT NULL,
-  `text` TEXT NOT NULL,
-  `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `thumnail` MEDIUMBLOB,
+  `content` TEXT NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `thumnail_id` VARCHAR(23) NOT NULL,
   `c_id` int NOT NULL,
   UNIQUE KEY `blog_id` (`blog_id`),
   PRIMARY KEY (`blog_id`)
