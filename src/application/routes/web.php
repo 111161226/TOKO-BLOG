@@ -45,6 +45,14 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('/lblog', function() {
         return view('bloglist');
     });
+
+    Route::get('/sblog', function() {
+        return view('showblog');
+    });
+
+    Route::get('/dblog', function() {
+        return view('deleteblog');
+    });
 });
 
 Route::get('/login', function() {
