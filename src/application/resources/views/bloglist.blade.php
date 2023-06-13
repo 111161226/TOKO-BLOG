@@ -8,12 +8,6 @@
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $blogs = $stmt->fetchAll();
-    function console_log($data){
-        echo '<script>';
-        echo 'console.log('.json_encode($data).')';
-        echo '</script>';
-      }
-    console_log(count($blogs));
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +25,7 @@
             <!-- show blog -->
             <h1> ブログ一覧 </h1>
             <?php if (count($blogs) == 0): ?>
-                <h2> ブログはありません </h2>
+                <h4> ブログはありません </h4>
             <?php endif; ?>
             <ul class="list-unstyled">
                 @csrf
@@ -42,12 +36,12 @@
                         </a>
                         <div class="media-body">
                         <h3> 
-                            <a href="/showblog?id=<?= $blogs[$i]['blog_id']; ?>">
+                            <a href="/sblog?id=<?= $blogs[$i]['blog_id']; ?>">
                                  <?= $blogs[$i]['title']; ?>
                            </a>
                         </h3>
                             <a href="javascript:void(0);" 
-                               onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/bremove?id=<?= $blogs[$i]['blog_id']; ?>'">
+                               onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/dblog?id=<?= $blogs[$i]['blog_id']; ?>'">
                               <i class="far fa-trash-alt"></i> 削除</a>
                         </div>
                     </li>
