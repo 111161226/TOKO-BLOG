@@ -29,19 +29,23 @@
     <div class="row">
         <div class="col-md-8 border-right">
             <!-- show blog -->
+            <h1> ブログ一覧 </h1>
+            <?php if (count($blogs) == 0): ?>
+                <h2> ブログはありません </h2>
+            <?php endif; ?>
             <ul class="list-unstyled">
                 @csrf
                 <?php for ($i = 0; $i < count($blogs); $i++): ?>
                     <li class="media mt-5">
                         <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                            <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" width="100" height="auto" class="mr-3">
+                            <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" width="80" height="auto" class="mr-3">
                         </a>
                         <div class="media-body">
-                        <h5> 
+                        <h3> 
                             <a href="/showblog?id=<?= $blogs[$i]['blog_id']; ?>">
-                                <?= $blogs[$i]['title']; ?>
+                                 <?= $blogs[$i]['title']; ?>
                            </a>
-                        </h5>
+                        </h3>
                             <a href="javascript:void(0);" 
                                onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/bremove?id=<?= $blogs[$i]['blog_id']; ?>'">
                               <i class="far fa-trash-alt"></i> 削除</a>
