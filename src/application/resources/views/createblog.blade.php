@@ -42,7 +42,7 @@ if (isset ($_POST['title']) && isset ($_POST['content']) && isset ($_POST['categ
     }
 
     //get category id
-    if (Count($res) == 0) {
+    if (empty($res)) {
         try {
             $stmt = null;
             $que = "INSERT INTO category_list (category) VALUES (:category)";
@@ -51,7 +51,7 @@ if (isset ($_POST['title']) && isset ($_POST['content']) && isset ($_POST['categ
             $stmt->execute();
             $stmt = null;
             echo "カテゴリーを追加しました。";
-            $cid = mysql_insert_id();
+            $cid = $pdo->lastInsertId();
         } catch (Exception $error) {
             echo "can't get category id" . $error->getMessage();
             exit();
