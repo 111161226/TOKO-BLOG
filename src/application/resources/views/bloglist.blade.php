@@ -4,10 +4,15 @@
     $err_msg = '';
     
     //get all blogs from db
-    $sql = 'SELECT * FROM `blogs` ORDER BY `created_at` DESC';
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $blogs = $stmt->fetchAll();
+    try{
+        $sql = 'SELECT * FROM `blogs` ORDER BY `created_at` DESC';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $blogs = $stmt->fetchAll();
+    } catch(Exception $error){
+        echo "failed to get blogs" . $error->getMessage();
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
