@@ -39,7 +39,8 @@
         </div>
         <!-- add article -->
         <div class="col-md-4 pt-4 pl-4">
-            <button onclick="location.href='/lblog'" class="btn btn-primary">一覧に戻る</button>
+            <button onclick="location.href='/eblog?id=<?= $blog['blog_id']; ?>'" class="btn btn-primary">編集</button>
+            <button onclick="location.href='/lblog'" class="btn btn-link">一覧に戻る</button>
         </div>
     </div>
 </div>

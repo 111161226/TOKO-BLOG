@@ -53,6 +53,10 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('/dblog', function() {
         return view('deleteblog');
     });
+
+    Route::get('/eblog', function() {
+        return view('editblog');
+    });
 });
 
 Route::get('/login', function() {
