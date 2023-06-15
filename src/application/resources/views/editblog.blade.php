@@ -4,12 +4,16 @@
     $err_msg = '';
     
     //get all blogs from db
-    $sql = 'SELECT blog_id, title, content, category, thumnail_id FROM `blogs` INNER JOIN `category_list` ON blogs.`c_id` = `category_list`.`c_id`  WHERE blog_id = :blog_id';
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindValue(':blog_id', $_GET['id'], PDO::PARAM_STR);
-    $stmt->execute();
-    $blog = $stmt->fetch();
-    $not=1;
+    try {
+        $sql = 'SELECT blog_id, title, content, category, thumnail_id FROM `blogs` INNER JOIN `category_list` ON blogs.`c_id` = `category_list`.`c_id`  WHERE blog_id = :blog_id';
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':blog_id', $_GET['id'], PDO::PARAM_STR);
+        $stmt->execute();
+        $blog = $stmt->fetch();
+    } catch (Exception $error) {
+        echo "can't get blog" . $error->getMessage();
+        exit();
+    }
 ?>
 <!DOCTYPE html>
 <html lang="ja">
