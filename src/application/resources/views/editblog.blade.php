@@ -32,6 +32,8 @@
         <div class="form-group">    
             @csrf
             <h1 class="text-center"> ブログ編集</h1><br>
+            <input type="hidden" name="id" value="<?= $blog['blog_id'];?>">
+            <input type="hidden" name="tid" value="<?= $blog['thumnail_id'];?>">
             <p>新しいカテゴリ：<input name="category" type="text" value="<?= $blog['category']; ?>" required>
             <p>新しいタイトル：<input name="title" type="text"  value="<?= $blog['title'];?>" required>
             <p>新しいサムネイル： <input name="thumnail" type="file" accept=".jpg,.jpeg,.png" onchange="previewImage(this);">
