@@ -61,6 +61,14 @@ Route::group(['middleware' => ['guest']], function () {
     Route::post('/eblog', function() {
         return view('updateblog');
     });
+
+    Route::get('/search', function() {
+        return view('searchblog');
+    });
+
+    Route::post('search', function() {
+        return view('searchblog');
+    });
 });
 
 Route::get('/login', function() {
