@@ -3,16 +3,18 @@
     $pdo = connectDB();
     $blogs = [];
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        //get all blogs from db
-        try {
-            $sql = "SELECT blog_id, title, content, category, thumnail_id FROM `blogs` INNER JOIN `category_list` ON blogs.`c_id` = `category_list`.`c_id`  
-                    WHERE title LIKE '%".$_POST["title"]."%' OR category LIKE '%".$_POST["category"]."%' ";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute();
-            $blogs = $stmt->fetchAll();
-        } catch (Exception $error) {
-            echo "can't get blog" . $error->getMessage();
-            exit();
+        if(!($_POST["title"] == '' && $_POST["category"] == '')){
+            //get all blogs from db
+            try {
+                $sql = "SELECT blog_id, title, content, category, thumnail_id FROM `blogs` INNER JOIN `category_list` ON blogs.`c_id` = `category_list`.`c_id`  
+                        WHERE title LIKE '%".$_POST["title"]."%' AND category LIKE '%".$_POST["category"]."%' ";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute();
+                $blogs = $stmt->fetchAll();
+            } catch (Exception $error) {
+                echo "can't get blog" . $error->getMessage();
+                exit();
+            }
         }
     }
 ?>
