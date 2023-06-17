@@ -24,38 +24,43 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 <body>
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 border-right">
-            <!-- show blog -->
-            <h1> ブログ一覧 </h1>
-            <?php if (count($blogs) == 0): ?>
-                <h4> ブログはありません </h4>
-            <?php endif; ?>
-            <ul class="list-unstyled">
-                @csrf
-                <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                    <li class="media mt-5">
-                        <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                            <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" width="80" height="auto" class="mr-3">
-                        </a>
-                        <div class="media-body">
-                        <h3> 
-                            <a href="/sblog?id=<?= $blogs[$i]['blog_id']; ?>">
-                                 <?= $blogs[$i]['title']; ?>
-                           </a>
-                        </h3>
-                            <a href="javascript:void(0);" 
-                               onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/dblog?id=<?= $blogs[$i]['blog_id']; ?>'">
-                              <i class="far fa-trash-alt"></i> 削除</a>
-                        </div>
-                    </li>
-                <?php endfor; ?>
-            </ul>
-        </div>
-        <!-- add article -->
-        <div class="col-md-4 pt-4 pl-4">
-            <button onclick="location.href='/mblog'" class="btn btn-primary">追加</button>
+<div class="container">
+    <div class="sidebar">
+        @include('sidebar')  
+    </div>
+    <div class="body">
+        <div class="row">
+            <div class="col-md-8 border-right">
+                <!-- show blog -->
+                <h1> ブログ一覧 </h1>
+                <?php if (count($blogs) == 0): ?>
+                    <h4> ブログはありません </h4>
+                <?php endif; ?>
+                <ul class="list-unstyled">
+                    @csrf
+                    <?php for ($i = 0; $i < count($blogs); $i++): ?>
+                        <li class="media mt-5">
+                            <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
+                                <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" width="80" height="auto" class="mr-3">
+                            </a>
+                            <div class="media-body">
+                            <h3> 
+                                <a href="/sblog?id=<?= $blogs[$i]['blog_id']; ?>">
+                                    <?= $blogs[$i]['title']; ?>
+                            </a>
+                            </h3>
+                                <a href="javascript:void(0);" 
+                                onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/dblog?id=<?= $blogs[$i]['blog_id']; ?>'">
+                                <i class="far fa-trash-alt"></i> 削除</a>
+                            </div>
+                        </li>
+                    <?php endfor; ?>
+                </ul>
+            </div>
+            <!-- add article -->
+            <div class="col-md-4 pt-4 pl-4">
+                <button onclick="location.href='/mblog'" class="btn btn-primary">追加</button>
+            </div>
         </div>
     </div>
 </div>

@@ -26,40 +26,45 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 <body>
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 border-right">
-            <!-- show image -->
-            <ul class="list-unstyled">
-                @csrf
-                <?php for ($i = 0; $i < count($images); $i ++): ?>
-                    <li class="media mt-5">
-                        <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                            <img src="image?id=<?= $images[$i]['image_id']; ?>" width="100" height="auto" class="mr-3">
-                        </a>
-                        <div class="media-body">
-                        <h5><?= $images[$i]['image_name']; ?> (<?= number_format($images[$i]['image_size']/1000, 2); ?> KB)</h5>
-                            <a href="javascript:void(0);" 
-                               onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/remove?id=<?= $images[$i]['image_id']; ?>'">
-                              <i class="far fa-trash-alt"></i> 削除</a>
-                        </div>
-                    </li>
-                <?php endfor; ?>
-            </ul>
-        </div>
-        <!-- store image -->
-        <div class="col-md-4 pt-4 pl-4">
-            <form method="post" enctype="multipart/form-data">
-                @csrf
-                <div class="form-group">
-                    <label>画像を選択</label>
-                    <input type="file" name="image[]" multiple="multiple" accept=".jpg,.jpeg,.png" required>
-                    <?php if ($err_msg != ''): ?>
-                        <div class="invalid-feedback d-block"><?= $err_msg; ?></div>
-                    <?php endif; ?>
-                </div>
-                <button type="submit" class="btn btn-primary">保存</button>
-            </form>
+<div class="container">
+    <div class="sidebar">
+        @include('sidebar')  
+    </div>
+    <div class="body">
+        <div class="row">
+            <div class="col-md-8 border-right">
+                <!-- show image -->
+                <ul class="list-unstyled">
+                    @csrf
+                    <?php for ($i = 0; $i < count($images); $i ++): ?>
+                        <li class="media mt-5">
+                            <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
+                                <img src="image?id=<?= $images[$i]['image_id']; ?>" width="100" height="auto" class="mr-3">
+                            </a>
+                            <div class="media-body">
+                            <h5><?= $images[$i]['image_name']; ?> (<?= number_format($images[$i]['image_size']/1000, 2); ?> KB)</h5>
+                                <a href="javascript:void(0);" 
+                                onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/remove?id=<?= $images[$i]['image_id']; ?>'">
+                                <i class="far fa-trash-alt"></i> 削除</a>
+                            </div>
+                        </li>
+                    <?php endfor; ?>
+                </ul>
+            </div>
+            <!-- store image -->
+            <div class="col-md-4 pt-4 pl-4">
+                <form method="post" enctype="multipart/form-data">
+                    @csrf
+                    <div class="form-group">
+                        <label>画像を選択</label>
+                        <input type="file" name="image[]" multiple="multiple" accept=".jpg,.jpeg,.png" required>
+                        <?php if ($err_msg != ''): ?>
+                            <div class="invalid-feedback d-block"><?= $err_msg; ?></div>
+                        <?php endif; ?>
+                    </div>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

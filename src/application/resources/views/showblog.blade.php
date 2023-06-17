@@ -25,27 +25,32 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 <body>
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 border-right">
-            <!-- show blog -->
-            <h1> <?= $blog['title']; ?> </h1>
-        <!--    <ul class="list-unstyled"> -->
-                @csrf
-                
-            <a href="#lightbox" data-toggle="modal">
-                <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
-            </a>
-            <div class="media-body">
-            <p> <?= $blog['content']; ?>
+<div class="container">
+    <div class="sidebar">
+        @include('sidebar')  
+    </div>
+    <div class="body">
+        <div class="row">
+            <div class="col-md-8 border-right">
+                <!-- show blog -->
+                <h1> <?= $blog['title']; ?> </h1>
+            <!--    <ul class="list-unstyled"> -->
+                    @csrf
+                    
+                <a href="#lightbox" data-toggle="modal">
+                    <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
+                </a>
+                <div class="media-body">
+                <p> <?= $blog['content']; ?>
+                </div>
+                    
+                <!-- </ul> -->
             </div>
-                
-            <!-- </ul> -->
-        </div>
-        <!-- add article -->
-        <div class="col-md-4 pt-4 pl-4">
-            <button onclick="location.href='/eblog?id=<?= $blog['blog_id']; ?>'" class="btn btn-primary">編集</button>
-            <button onclick="location.href='/lblog'" class="btn btn-link">一覧に戻る</button>
+            <!-- add article -->
+            <div class="col-md-4 pt-4 pl-4">
+                <button onclick="location.href='/eblog?id=<?= $blog['blog_id']; ?>'" class="btn btn-primary">編集</button>
+                <button onclick="location.href='/lblog'" class="btn btn-link">一覧に戻る</button>
+            </div>
         </div>
     </div>
 </div>
