@@ -66,8 +66,12 @@ Route::group(['middleware' => ['guest']], function () {
         return view('searchblog');
     });
 
-    Route::post('search', function() {
+    Route::post('/search', function() {
         return view('searchblog');
+    });
+
+    Route::get('/logout', function() {
+        return view('logout');
     });
 });
 
