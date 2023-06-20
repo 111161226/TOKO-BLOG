@@ -6,10 +6,11 @@
 
     //get image from db
     try {
-        $sql = 'SELECT `image_id`, `image_name`, `image_size` FROM `images` WHERE not exists (
+        $sql = 'SELECT `image_id`, `image_name`, `image_size` FROM `images`INNER JOIN image_owner ON album_id = image_id WHERE author_id = :user_id  AND not exists (
             SELECT * from blogs WHERE images.image_id = blogs.thumnail_id
         ) ORDER BY `created_at` DESC';
         $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
         $stmt->execute();
         $images = $stmt->fetchAll();
     } catch(Exception $error){

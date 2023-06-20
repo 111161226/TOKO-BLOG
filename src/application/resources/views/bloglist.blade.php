@@ -5,8 +5,9 @@
     
     //get all blogs from db
     try{
-        $sql = 'SELECT * FROM `blogs` ORDER BY `created_at` DESC';
+        $sql = 'SELECT `blog_id`, `title`, `thumnail_id` FROM `blogs` INNER JOIN blog_owner ON b_id = blog_id WHERE author_id = :user_id ORDER BY `created_at` DESC';
         $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
         $stmt->execute();
         $blogs = $stmt->fetchAll();
     } catch(Exception $error){
@@ -22,6 +23,12 @@
     <title>ブログ一覧</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <style type="text/css">
+        #head {
+            text-align : center;
+            background-color:#1e93c1;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -32,7 +39,7 @@
         <div class="row">
             <div class="col-md-8 border-right">
                 <!-- show blog -->
-                <h1> ブログ一覧 </h1>
+                <h1 id="head"> ブログ一覧 </h1>
                 <?php if (count($blogs) == 0): ?>
                     <h4> ブログはありません </h4>
                 <?php endif; ?>
