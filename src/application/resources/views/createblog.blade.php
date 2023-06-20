@@ -100,6 +100,34 @@ if (isset ($_POST['title']) && isset ($_POST['content']) && isset ($_POST['categ
         exit();
     }
 
+    //add auther info of image
+    try {
+        $sql = 'INSERT INTO image_owner(album_id, author_id) VALUES (:a_id, :user_id)';
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':a_id', $tid, PDO::PARAM_STR);
+        $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
+        $stmt->execute();
+        $stmt=null;
+        echo "successed to store the author info";
+    } catch (Exception $error) {
+        echo "failed to store the author info" . $error->getMessage();
+        exit();
+    }
+
+    //add auther info of blog
+    try {
+        $sql = 'INSERT INTO blog_owner(b_id, author_id) VALUES (:b_id, :user_id)';
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':b_id', $bid, PDO::PARAM_STR);
+        $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
+        $stmt->execute();
+        $stmt=null;
+        echo "successed to store the author info";
+    } catch (Exception $error) {
+        echo "failed to store the author info" . $error->getMessage();
+        exit();
+    }
+
     header('Location:/lblog');
     exit();
 }
