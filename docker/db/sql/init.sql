@@ -46,3 +46,19 @@ CREATE TABLE `blogs` (
   UNIQUE KEY `blog_id` (`blog_id`),
   PRIMARY KEY (`blog_id`)
 ) DEFAULT CHARSET=utf8mb4;
+
+/* table for image owner*/
+DROP TABLE IF EXISTS `image_owner`;
+
+CREATE TABLE `image_owner` (
+  `album_id` VARCHAR(23) NOT NULL,
+  `author_id` VARCHAR(23) NOT NULL
+) DEFAULT CHARSET=utf8mb4;
+
+/* table for blog owner*/
+DROP TABLE IF EXISTS `blog_owner`;
+
+CREATE TABLE `blog_owner` (
+  `b_id` VARCHAR(23) NOT NULL,
+  `author_id` VARCHAR(23) NOT NULL
+) DEFAULT CHARSET=utf8mb4;
