@@ -5,7 +5,7 @@
     
     //get all blogs from db
     try {
-        $sql = 'SELECT * FROM `blogs` WHERE blog_id = :blog_id';
+        $sql = 'SELECT blog_id, author_id, title, content, thumnail_id FROM `blogs` INNER JOIN blog_owner ON b_id = blog_id WHERE blog_id = :blog_id';
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':blog_id', $_GET['id'], PDO::PARAM_STR);
         $stmt->execute();
@@ -23,6 +23,7 @@
     <title>ブログ</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <style type="text/css"> #blog {text-align : center;} </style>
 </head>
 <body>
 <div class="container">
@@ -30,27 +31,46 @@
         @include('sidebar')  
     </div>
     <div class="body">
-        <div class="row">
-            <div class="col-md-8 border-right">
-                <!-- show blog -->
-                <h1> <?= $blog['title']; ?> </h1>
-            <!--    <ul class="list-unstyled"> -->
-                    @csrf
-                    
-                <a href="#lightbox" data-toggle="modal">
-                    <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
-                </a>
-                <div class="media-body">
-                <p> <?= $blog['content']; ?>
+        <? if ($blog['author_id'] == $_SESSION['id']): ?>
+            <div class="row">
+                <div class="col-md-8 border-right">
+                    <div id="blog">
+                    <!-- show blog -->
+                    <h1> <?= $blog['title']; ?> </h1>
+                <!--    <ul class="list-unstyled"> -->
+                        @csrf
+                        
+                    <a href="#lightbox" data-toggle="modal">
+                        <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
+                    </a>
+                    <div class="media-body">
+                    <p> <?= $blog['content']; ?>
+                    </div>
                 </div>
-                    
-                <!-- </ul> -->
+                    <!-- </ul> -->
+                </div>
+                <!-- edit article -->
+                <div class="col-md-4 pt-4 pl-4">
+                    <button onclick="location.href='/eblog?id=<?= $blog['blog_id']; ?>'" class="btn btn-primary">編集</button>
+                    <button onclick="location.href='/lblog'" class="btn btn-link">一覧に戻る</button>
+                </div>
             </div>
-            <!-- add article -->
-            <div class="col-md-4 pt-4 pl-4">
-                <button onclick="location.href='/eblog?id=<?= $blog['blog_id']; ?>'" class="btn btn-primary">編集</button>
-                <button onclick="location.href='/lblog'" class="btn btn-link">一覧に戻る</button>
-            </div>
+            <?else:?>
+                <!-- show blog -->
+                <div id="blog">
+                    <ul class="list-unstyled">
+                    <h1> <?= $blog['title']; ?> </h1>
+                        @csrf
+                        
+                    <a href="#lightbox" data-toggle="modal">
+                        <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
+                    </a>
+                    <div class="media-body">
+                    <p> <?= $blog['content']; ?>
+                    </div>
+                    </ul>
+                </div>
+            <? endif ?>
         </div>
     </div>
 </div>
