@@ -43,10 +43,13 @@
                     <a href="#lightbox" data-toggle="modal">
                         <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
                     </a>
-                    <div class="media-body">
-                    <p> <?= $blog['content']; ?>
                     </div>
-                </div>
+                    <div class="media-body">
+                    <br>
+                    <p style="padding-left: 20px;"> {!! Str::markdown($blog['content'], [
+                        'html_input' => 'escape',
+                        ]) !!}
+                    </div>
                     <!-- </ul> -->
                 </div>
                 <!-- edit article -->
@@ -65,10 +68,13 @@
                     <a href="#lightbox" data-toggle="modal">
                         <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
                     </a>
-                    <div class="media-body">
-                    <p> <?= $blog['content']; ?>
-                    </div>
                     </ul>
+                </div>
+                <div class="media-body">
+                    <br>
+                    <p style="padding-left: 20px;"> {!! Str::markdown($blog['content'], [
+                        'html_input' => 'escape',
+                        ]) !!}
                 </div>
             <? endif ?>
         </div>
