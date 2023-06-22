@@ -3,7 +3,7 @@
     $pdo = connectDB();
     $err_msg = '';
     
-    //get all blogs from db
+    //get blog info from db
     try {
         $sql = 'SELECT blog_id, author_id, title, content, thumnail_id FROM `blogs` INNER JOIN blog_owner ON b_id = blog_id WHERE blog_id = :blog_id';
         $stmt = $pdo->prepare($sql);
@@ -11,8 +11,13 @@
         $stmt->execute();
         $blog = $stmt->fetch();
     } catch (Exception $error) {
-        echo "can't get all blogs" . $error->getMessage();
+        echo "can't get blog info" . $error->getMessage();
         exit();
+    }
+
+    //get username
+    if($blog['author_id'] != $_SESSION['id']) {
+        $author = getname($blog['author_id']);
     }
 ?>
 
@@ -31,6 +36,7 @@
         @include('sidebar')  
     </div>
     <div class="body">
+        <!-- administer view -->
         <? if ($blog['author_id'] == $_SESSION['id']): ?>
             <div class="row">
                 <div class="col-md-8 border-right">
@@ -58,25 +64,27 @@
                     <button onclick="location.href='/lblog'" class="btn btn-link">一覧に戻る</button>
                 </div>
             </div>
-            <?else:?>
-                <!-- show blog -->
-                <div id="blog">
-                    <ul class="list-unstyled">
-                    <h1> <?= $blog['title']; ?> </h1>
-                        @csrf
-                        
-                    <a href="#lightbox" data-toggle="modal">
-                        <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
-                    </a>
-                    </ul>
-                </div>
-                <div class="media-body">
-                    <br>
-                    <p style="padding-left: 20px;"> {!! Str::markdown($blog['content'], [
-                        'html_input' => 'escape',
-                        ]) !!}
-                </div>
-            <? endif ?>
+        <!-- view only -->
+        <?else:?>
+            <!-- show blog -->
+            <div id="blog">
+                <ul class="list-unstyled">
+                <h1> <?= $blog['title']; ?> </h1>
+                    @csrf
+                    
+                <a href="#lightbox" data-toggle="modal">
+                    <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
+                </a>
+                </ul>
+            </div>
+            <div class="media-body">
+                <br>
+                <p style="padding-left: 20px;"> {!! Str::markdown($blog['content'], [
+                    'html_input' => 'escape',
+                    ]) !!}
+            </div>
+            <h>ユーザー: <?= $author; ?></label></h>
+        <? endif ?>
         </div>
     </div>
 </div>

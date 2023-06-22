@@ -19,6 +19,22 @@
             }
         }
     }
+    $authors = array();
+    for ($i=0; $i < count($blogs); $i++) {
+        //get blog info from db
+        try {
+            $sql = 'SELECT blog_id, author_id, title, content, thumnail_id FROM `blogs` INNER JOIN blog_owner ON b_id = blog_id WHERE blog_id = :blog_id';
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindValue(':blog_id', $blogs[$i]['blog_id'], PDO::PARAM_STR);
+            $stmt->execute();
+            $tmp = $stmt->fetch();
+        } catch (Exception $error) {
+            echo "can't get blog info" . $error->getMessage();
+            exit();
+        }
+        $authorname = getname($tmp['author_id']);
+        array_push($authors, $authorname);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -64,8 +80,9 @@
                             <h3> 
                                 <a href="/sblog?id=<?= $blogs[$i]['blog_id']; ?>">
                                     <?= $blogs[$i]['title']; ?>
-                            </a>
+                                </a>
                             </h3>
+                            <label> ユーザー: <?= $authors[$i]; ?></label>
                             </div>
                         </li>
                     <?php endfor; ?>
