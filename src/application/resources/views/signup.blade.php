@@ -9,7 +9,17 @@
     <title>Login form</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <style type="text/css"> #head {text-align : center;} </style>
+    <style type="text/css"> 
+        #head {
+            text-align : center;
+        }
+        #btn {
+            margin-left: 200px;
+        }
+        #lnk {
+            margin-left: 80px;
+        } 
+    </style>
 </head>
 <body>
 <div class="container">
@@ -38,12 +48,12 @@
             <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="max-width:200px;">
             </p>
         </div>
-        <input type="submit" class="btn btn-primary" value="新規登録">
+        <input type="submit" id="btn" class="btn btn-primary" value="新規登録">
         <?php if ($err_msg != ''): ?>
             <div class="invalid-feedback d-block"><?= $err_msg; ?></div>
         <?php endif; ?>
         <br>
-        <p>すでに登録済みの方は<a href="/login">こちら</a></p>
+        <p id="lnk">すでに登録済みの方は<a href="/login">こちら</a></p>
         </form>
     </div>
 </div>
