@@ -73,6 +73,14 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('/logout', function() {
         return view('logout');
     });
+
+    Route::get('/profile', function() {
+        return view('profile');
+    });
+
+    Route::get('/thumnail', function() {
+        return view('thumnail');
+    });
 });
 
 Route::get('/login', function() {
