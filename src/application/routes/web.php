@@ -78,6 +78,10 @@ Route::group(['middleware' => ['guest']], function () {
         return view('profile');
     });
 
+    Route::post('/profile', function() {
+        return view('uprofile');
+    });
+
     Route::get('/thumnail', function() {
         return view('thumnail');
     });
