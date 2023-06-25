@@ -46,16 +46,22 @@
                 <div class="form-group"> 
                     <div>
                         <label>
-                            ユーザー名： <input type="text" name="username" value="<?= $user['user_name'];?>">
+                            ユーザー名： <input type="text" name="username" value="<?= $user['user_name'];?>" required>
                         </label>
                     </div>
                     <div>
                         <label>
-                            新しいパスワード： <input type="password" name="pass" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30">
+                            現在のパスワード： <input type="password" name="pass" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30" required>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            新しいパスワード： <input type="password" name="newpass" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30">
                         </label>
                     </div>
                     <p>
                         サムネイル：
+                        <input type="hidden" name="tid" value="<?= $user['image_id'];?>">
                         <input name="thumnail" type="file" accept=".jpg,.jpeg,.png" onchange="previewImage(this);">
                         <p class="text-center">
                             <img id="preview" src="thumnail?id=<?= $user['image_id']; ?>" style="max-width:200px;" height="auto" class="mr-3"> 
