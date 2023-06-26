@@ -31,6 +31,14 @@
         #btn {
             margin-left: 300px;
         }
+        #preview {
+            border-radius: 50%;  /* turn into radius */
+            width:  200px;       /* set width */
+            height: 180px;       /* set height */
+        }
+        #thum {
+            margin-left: 50px;
+        } 
     </style>
 </head>
 <body>
@@ -63,9 +71,9 @@
                         サムネイル：
                         <input type="hidden" name="tid" value="<?= $user['image_id'];?>">
                         <input name="thumnail" type="file" accept=".jpg,.jpeg,.png" onchange="previewImage(this);">
-                        <p class="text-center">
-                            <img id="preview" src="thumnail?id=<?= $user['image_id']; ?>" style="max-width:200px;" height="auto" class="mr-3"> 
-                            <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="max-width:200px;">
+                        <p class="text-center" id="thum">
+                            <img id="preview" src="thumnail?id=<?= $user['image_id']; ?>" class="mr-3"> 
+                            <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
                         </p>
                     </p>
                     <p><input type="submit" id="btn" class="btn btn-primary" value="更新">
@@ -73,19 +81,6 @@
             </form>
         </div>
     </div>
-</div>
-
-<!-- show thumnail ver Enlarge -->
-<div class="modal carousel slide" id="lightbox" tabindex="-1" role="dialog" data-ride="carousel">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <div class="carousel-inner">
-            <img src="thumnail?id=<?= $user['image_id']; ?>" class="d-block w-100">
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>

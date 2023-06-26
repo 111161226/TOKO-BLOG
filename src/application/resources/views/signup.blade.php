@@ -18,6 +18,11 @@
         }
         #lnk {
             margin-left: 80px;
+        }
+        #preview {
+            border-radius: 50%;  /* turn into radius */
+            width:  200px;       /* set width */
+            height: 180px;       /* set height */
         } 
     </style>
 </head>
@@ -45,7 +50,7 @@
                 サムネイル：
                 <input name="thumnail" type="file" accept=".jpg,.jpeg,.png" required onchange="previewImage(this);">
             <p class="text-center">
-            <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="max-width:200px;">
+            <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
             </p>
         </div>
         <input type="submit" id="btn" class="btn btn-primary" value="新規登録">
