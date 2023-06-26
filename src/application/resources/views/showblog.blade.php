@@ -28,7 +28,19 @@
     <title>ブログ</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <style type="text/css"> #blog {text-align : center;} </style>
+    <style type="text/css"> 
+        #blog {
+            text-align : center;
+        }
+        #thum {
+            width: 80%;       /* set width */
+            height: 200px;    /* set height */
+        }
+        #view {
+            width: 80%;
+            height: 250px;
+        } 
+    </style>
 </head>
 <body>
 <div class="container">
@@ -47,7 +59,7 @@
                         @csrf
                         
                     <a href="#lightbox" data-toggle="modal">
-                        <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
+                        <img id="thum" src="image?id=<?= $blog['thumnail_id']; ?>" class="mr-3">
                     </a>
                     </div>
                     <div class="media-body">
@@ -70,10 +82,9 @@
             <div id="blog">
                 <ul class="list-unstyled">
                 <h1> <?= $blog['title']; ?> </h1>
-                    @csrf
-                    
+                @csrf
                 <a href="#lightbox" data-toggle="modal">
-                    <img src="image?id=<?= $blog['thumnail_id']; ?>" width="300" height="auto" class="mr-3">
+                    <img id="view" src="image?id=<?= $blog['thumnail_id']; ?>" class="mr-3">
                 </a>
                 </ul>
             </div>
