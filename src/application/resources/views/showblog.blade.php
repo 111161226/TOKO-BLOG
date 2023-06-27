@@ -17,7 +17,7 @@
 
     //get username
     if($blog['author_id'] != $_SESSION['id']) {
-        $author = getname($blog['author_id']);
+        $author = getuserinfo($blog['author_id']);
     }
 ?>
 
@@ -33,12 +33,17 @@
             text-align : center;
         }
         #thum {
-            width: 80%;       /* set width */
-            height: 200px;    /* set height */
+            width: 180px;
+            height: "auto";
         }
         #view {
-            width: 80%;
-            height: 250px;
+            width: 200px;
+            height: "auto";
+        }
+        #author {
+            border-radius: 50%;  /* turn into radius */
+            width:  50px;       /* set width */
+            height: 40px;       /* set height */
         } 
     </style>
 </head>
@@ -94,7 +99,7 @@
                     'html_input' => 'escape',
                     ]) !!}
             </div>
-            <h>ユーザー: <?= $author; ?></label></h>
+            <h>ユーザー: <?= $author['user_name']; ?> <img id="author" src="thumnail?id=<?= $author['image_id']; ?>" class="mr-3"> </h>
         <? endif ?>
         </div>
     </div>
