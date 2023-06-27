@@ -12,20 +12,20 @@
     }
 
     //get user name
-    function getname($id) {
+    function getuserinfo($id) {
         $pdo = connectDB();
         //get user info
         try {
-            $sql = "SELECT * FROM users WHERE user_id = :id";
+            $sql = "SELECT user_name, image_id FROM users INNER JOIN user_thumnail ON user_id = u_id  WHERE user_id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->bindValue(':id', $id, PDO::PARAM_STR);
             $stmt->execute();
             $userinfo = $stmt->fetch();
         } catch(Exception $error){
-            echo "failed to login" . $error->getMessage();
+            echo "failed to get author info" . $error->getMessage();
             exit();
         }
 
-        return $userinfo['user_name'];
+        return $userinfo;
     }
 ?>
