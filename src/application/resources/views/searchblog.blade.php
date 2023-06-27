@@ -32,8 +32,8 @@
             echo "can't get blog info" . $error->getMessage();
             exit();
         }
-        $authorname = getname($tmp['author_id']);
-        array_push($authors, $authorname);
+        $authorname = getuserinfo($tmp['author_id']);
+        array_push($authors, $authorname['user_name']);
     }
 ?>
 
