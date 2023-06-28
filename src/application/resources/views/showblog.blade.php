@@ -45,6 +45,9 @@
             width:  50px;       /* set width */
             height: 40px;       /* set height */
         } 
+        #art {
+            overflow-wrap: anywhere
+        }
     </style>
 </head>
 <body>
@@ -67,7 +70,7 @@
                         <img id="thum" src="image?id=<?= $blog['thumnail_id']; ?>" class="mr-3">
                     </a>
                     </div>
-                    <div class="media-body">
+                    <div class="media-body" id="art">
                     <br>
                     <p style="padding-left: 20px;"> {!! Str::markdown($blog['content'], [
                         'html_input' => 'escape',
@@ -93,7 +96,7 @@
                 </a>
                 </ul>
             </div>
-            <div class="media-body">
+            <div class="media-body" id="art">
                 <br>
                 <p style="padding-left: 20px;"> {!! Str::markdown($blog['content'], [
                     'html_input' => 'escape',
