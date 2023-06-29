@@ -3,11 +3,13 @@
     $pdo = connectDB();
     $err_msg = '';
     
-    //get all blogs from db
+    //get a blog from db
     try {
-        $sql = 'SELECT blog_id, title, content, category, thumnail_id FROM `blogs` INNER JOIN `category_list` ON blogs.`c_id` = `category_list`.`c_id`  WHERE blog_id = :blog_id';
+        $sql = 'SELECT blog_id, title, content, category, thumnail_id FROM `blogs` INNER JOIN `category_list` ON blogs.`c_id` = `category_list`.`c_id`  WHERE blog_id = :blog_id AND exists (
+            SELECT * from blog_owner WHERE blog_id = b_id AND author_id = :uid)';
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':blog_id', $_GET['id'], PDO::PARAM_STR);
+        $stmt->bindValue(':uid', $_SESSION['id'], PDO::PARAM_STR);
         $stmt->execute();
         $blog = $stmt->fetch();
     } catch (Exception $error) {

@@ -11,6 +11,24 @@ if (isset($_POST['id']) && isset ($_POST['title']) && isset ($_POST['content']) 
     //connect to mysql
     $pdo = connectDB();
 
+    //check update is valid
+    try {
+        $sql = 'SELECT COUNT(*) from blog_owner WHERE b_id = :blog_id AND author_id = :uid';
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':blog_id', $_GET['id'], PDO::PARAM_STR);
+        $stmt->bindValue(':uid', $_SESSION['id'], PDO::PARAM_STR);
+        $stmt->execute();
+        $num = $stmt->fetchColumn();
+    } catch (Exception $error) {
+        echo "can't update blog" . $error->getMessage();
+        exit();
+    }
+
+    if ($num == 0) {
+        echo "can't update blog";
+        exit();
+    }
+
     //check the category is new
     try {
         $que = "SELECT * FROM `category_list` WHERE category = :category";
