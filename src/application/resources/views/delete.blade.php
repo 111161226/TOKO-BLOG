@@ -3,12 +3,29 @@
 
 $pdo = connectDB();
 
-//delete auther info of image
+//check delete is valid
 try {
-    $sql = 'DELETE image_owner WHERE album_id = :image_id AND author_id = :uid';
+    $sql = 'SELECT COUNT(*) from image_owner WHERE album_id = :image_id AND author_id = :uid';
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':image_id', $_GET['id'], PDO::PARAM_STR);
     $stmt->bindValue(':uid', $_SESSION['id'], PDO::PARAM_STR);
+    $stmt->execute();
+    $num = $stmt->fetchColumn();
+} catch (Exception $error) {
+    echo "can't delete image" . $error->getMessage();
+    exit();
+}
+
+if($num == 0) {
+    echo "can't delete image";
+    exit();
+}
+
+//delete auther info of image
+try {
+    $sql = 'DELETE image_owner WHERE album_id = :image_id';
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':image_id', $_GET['id'], PDO::PARAM_STR);
     $stmt->execute();
     $stmt=null;
     echo "successed to delete the author info";
