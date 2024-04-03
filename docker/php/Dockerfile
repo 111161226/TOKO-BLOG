@@ -15,7 +15,7 @@ ENV PATH $PATH:/composer/vendor/bin
 
 RUN composer global require "laravel/installer"
 
-RUN curl -SL https://deb.nodesource.com/setup_14.x | bash
+RUN curl -SL https://deb.nodesource.com/setup_20.x | bash
 RUN apt-get install -y nodejs && \
   npm install -g npm@latest && \
   npm install -g @vue/cli
