@@ -22,6 +22,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./docker/db/sql:/docker-entrypoint-initdb.d
+      - toko-blog-volume:/var/lib/mysql
     ports:
       - 3306:3306
     environment:
@@ -29,7 +30,7 @@ services:
       MYSQL_DATABASE: mysql
       MYSQL_USER: test
       MYSQL_PASSWORD: test
-  
+
   #db for test
   db-test:
     image: mysql:5.7
@@ -73,3 +74,6 @@ services:
       - 8080:80
     depends_on:
       - mysql
+
+volumes:
+    toko-blog-volume:
