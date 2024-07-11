@@ -29,6 +29,23 @@ services:
       MYSQL_DATABASE: mysql
       MYSQL_USER: test
       MYSQL_PASSWORD: test
+  
+  #db for test
+  db-test:
+    image: mysql:5.7
+    container_name: db-test
+    command: --max_allowed_packet=32505856 
+    platform: linux/amd64
+    build:
+      context: ./docker/db
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: db-test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - 3000:3306
 
   #container for phpMyAdmin
   phpmyadmin:
