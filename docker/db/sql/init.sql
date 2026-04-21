@@ -52,7 +52,8 @@ DROP TABLE IF EXISTS `image_owner`;
 
 CREATE TABLE `image_owner` (
   `album_id` VARCHAR(23) NOT NULL,
-  `author_id` VARCHAR(23) NOT NULL
+  `author_id` VARCHAR(23) NOT NULL,
+  PRIMARY KEY (`album_id`, `author_id`) -- これを追加
 ) DEFAULT CHARSET=utf8mb4;
 
 /* table for blog owner*/
@@ -60,7 +61,8 @@ DROP TABLE IF EXISTS `blog_owner`;
 
 CREATE TABLE `blog_owner` (
   `b_id` VARCHAR(23) NOT NULL,
-  `author_id` VARCHAR(23) NOT NULL
+  `author_id` VARCHAR(23) NOT NULL,
+  PRIMARY KEY (`b_id`, `author_id`) -- これを追加
 ) DEFAULT CHARSET=utf8mb4;
 
 /* table for user thumnail */
