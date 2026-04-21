@@ -37,7 +37,7 @@ RUN chown -R www-data:www-data /var/www/application
 
 # NginxとPHP-FPMを両方起動するためのコマンド
 # Renderのポートチェックを通すためにNginxをバックグラウンドにせず起動します
-CMD service php7.3-fpm start && nginx -g "daemon off;"
+CMD php-fpm -D && nginx -g "daemon off;"
 
 RUN echo "file_uploads = On\n" \
          "memory_limit = 512M\n" \
