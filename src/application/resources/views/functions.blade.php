@@ -1,13 +1,23 @@
 <?php
     // connect database
     function connectDB() {
-        $param = 'mysql:dbname=mysql;host=mysql';
-        try {
-            $pdo = new PDO($param, "test", "test");
-            return $pdo;
+        // 環境変数から取得（設定されていなければ右側のデフォルト値を使用）
+        $db_host = getenv('DB_HOST') ?: 'mysql'; // docker-composeのサービス名
+        $db_name = getenv('DB_NAME') ?: 'mysql';
+        $db_user = getenv('DB_USER') ?: 't1';
+        $db_pass = getenv('DB_PASS') ?: 't2';
 
+        $param = "mysql:dbname={$db_name};host={$db_host};charset=utf8mb4";
+        
+        try {
+            $pdo = new PDO($param, $db_user, $db_pass, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
+            return $pdo;
         } catch (PDOException $e) {
-            exit($e->getMessage());
+            // 本番環境では詳細なエラーを出さないのがセキュリティ上の定石
+            exit("DB Connection Error.");
         }
     }
 
