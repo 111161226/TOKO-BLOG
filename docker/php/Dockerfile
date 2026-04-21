@@ -29,7 +29,7 @@ COPY docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
 
 # 作業ディレクトリの設定とソースコードのコピー 
 # default.confのroot設定に合わせて /var/www/application に配置します
-WORKDIR /var/www/application
+WORKDIR /var/www/application/public
 COPY . .
 
 # 権限の設定
