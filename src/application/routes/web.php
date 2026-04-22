@@ -13,16 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::group(['middleware' => ['guest']], function () {
-    Route::get('/home', function(){
+    Route::get('/', function () {
         return view('home');
     });
     
-    Route::post('/home', function() {
+    Route::post('/', function() {
         return view('upload');
     });
     
