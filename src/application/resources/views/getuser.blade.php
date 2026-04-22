@@ -24,7 +24,7 @@ if (password_verify($pass, $member['password'])) {
     $_SESSION['id'] = $member['user_id'];
     $_SESSION['name'] = $member['user_name'];
     $msg = 'You success login';
-    $link = 'Location:/home';
+    $link = 'Location:/';
 } else {
     $err_msg = 'You made mistakes on username or password';
     echo($err_msg);

@@ -41,7 +41,7 @@ else {
         $stmt->bindValue(':pass', $pass);
         $stmt->execute();
         $msg = 'finish registering';
-        $link = 'Location:/login';
+        $link = 'Location:/';
     } catch(Exception $error){
         echo "failed to register" . $error->getMessage();
         exit();
@@ -77,6 +77,9 @@ if ($err_msg == '') {
         exit();
     }
 }
+
+$_SESSION['id'] = $member['user_id'];
+$_SESSION['name'] = $member['user_name'];
 
 header($link);
 echo $msg;
