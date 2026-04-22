@@ -33,7 +33,7 @@ WORKDIR /var/www/application/public
 COPY . .
 
 # 権限の設定
-RUN chown -R www-data:www-data /var/www/application/src
+RUN chown -R www-data:www-data /var/www/application
 
 # NginxとPHP-FPMを両方起動するためのコマンド
 # Renderのポートチェックを通すためにNginxをバックグラウンドにせず起動します
