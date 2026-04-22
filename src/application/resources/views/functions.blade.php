@@ -19,7 +19,7 @@
             return $pdo;
         } catch (PDOException $e) {
             // 本番環境では詳細なエラーを出さないのがセキュリティ上の定石
-            exit("DB Connection Error.");
+            exit($e);
         }
     }
 
