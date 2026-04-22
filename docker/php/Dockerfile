@@ -28,6 +28,7 @@ RUN composer install --no-dev --optimize-autoloader
 
 # 4. 権限設定
 RUN chown -R www-data:www-data /var/www/application
+RUN chmod -R 775 /var/www/application/storage /var/www/application/bootstrap/cache
 
 # 起動
 CMD php-fpm -D && nginx -g "daemon off;"
