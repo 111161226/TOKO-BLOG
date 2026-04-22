@@ -6,8 +6,9 @@
         $db_name = getenv('DB_NAME') ?: 'mysql';
         $db_user = getenv('DB_USER') ?: 't1';
         $db_pass = getenv('DB_PASS') ?: 't2';
+        $db_port = getenv('DB_PORT') ?: '3306';
 
-        $param = "mysql:dbname={$db_name};host={$db_host};charset=utf8mb4";
+        $param = "mysql:dbname={$db_name};host={$db_host};port={$db_port};charset=utf8mb4";
         
         try {
             $pdo = new PDO($param, $db_user, $db_pass, [
