@@ -22,11 +22,11 @@ COPY docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
 
 # --- ソースコードの配置 ---
 # 1. コンテナ内の基準ディレクトリを作成
-WORKDIR /var/www/application
+WORKDIR /var/www/application/src/application
 
 # 2. プロジェクト全体をコピー
 # これによりコンテナ内の /var/www/application/src/application/public/index.php に配置されます
-COPY . .
+COPY . /var/www/application/
 
 # 3. 権限設定
 RUN chown -R www-data:www-data /var/www/application
