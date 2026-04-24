@@ -1,23 +1,3 @@
-@include('functions')
-<?php
-
-    $pdo = connectDB();
-    $err_msg = '';
-
-    //get image from db
-    try {
-        $sql = 'SELECT `image_id`, `image_name`, `image_size` FROM `images`INNER JOIN image_owner ON album_id = image_id WHERE author_id = :user_id  AND not exists (
-            SELECT * from blogs WHERE images.image_id = blogs.thumnail_id
-        ) ORDER BY `created_at` DESC';
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
-        $stmt->execute();
-        $images = $stmt->fetchAll();
-    } catch(Exception $error){
-        echo "failed to get images" . $error->getMessage();
-        exit();
-    }
-?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -37,19 +17,19 @@
                 <!-- show image -->
                 <ul class="list-unstyled">
                     @csrf
-                    <?php for ($i = 0; $i < count($images); $i ++): ?>
+                    @foreach ($images as $image)
                         <li class="media mt-5">
                             <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                                <img src="image?id=<?= $images[$i]['image_id']; ?>" width="100" height="auto" class="mr-3">
+                                <img src="image?id=<?= $image->image_id; ?>" width="100" height="auto" class="mr-3">
                             </a>
                             <div class="media-body">
-                            <h5><?= $images[$i]['image_name']; ?> (<?= number_format($images[$i]['image_size']/1000, 2); ?> KB)</h5>
+                            <h5><?= $image->image_name; ?> (<?= number_format($image->image_size/1000, 2); ?> KB)</h5>
                                 <a href="javascript:void(0);" 
-                                onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/remove?id=<?= $images[$i]['image_id']; ?>'">
+                                onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/remove?id=<?= $image->image_id; ?>'">
                                 <i class="far fa-trash-alt"></i> 削除</a>
                             </div>
                         </li>
-                    <?php endfor; ?>
+                    @endforeach
                 </ul>
             </div>
             <!-- store image -->
@@ -59,9 +39,13 @@
                     <div class="form-group">
                         <label>画像を選択</label>
                         <input type="file" name="image[]" multiple="multiple" accept=".jpg,.jpeg,.png" required>
-                        <?php if ($err_msg != ''): ?>
-                            <div class="invalid-feedback d-block"><?= $err_msg; ?></div>
-                        <?php endif; ?>
+                        @if ($errors->any())
+                            <div class="invalid-feedback d-block">
+                                @foreach ($errors->all() as $error)
+                                    {{ $error }}<br>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                     <button type="submit" class="btn btn-primary">保存</button>
                 </form>
@@ -84,7 +68,7 @@
         <div class="carousel-inner">
             <?php for ($i = 0; $i < count($images); $i++): ?>
                 <div class="carousel-item <?php if ($i == 0) echo 'active'; ?>">
-                <img src="image?id=<?= $images[$i]['image_id']; ?>" class="d-block w-100">
+                <img src="image?id=<?= $images[$i]->image_id; ?>" class="d-block w-100">
                 </div>
             <?php endfor; ?>
         </div>
