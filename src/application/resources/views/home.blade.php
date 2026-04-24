@@ -17,24 +17,29 @@
                 <!-- show image -->
                 <ul class="list-unstyled">
                     @csrf
-                    @foreach ($images as $image)
+                    @for($i = 0; $i < count($images); $i++)
                         <li class="media mt-5">
                             <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                                <img src="image?id=<?= $image->image_id; ?>" width="100" height="auto" class="mr-3">
+                                <img src="images/<?= $images[$i]->image_id; ?>" width="100" height="auto" class="mr-3">
                             </a>
                             <div class="media-body">
-                            <h5><?= $image->image_name; ?> (<?= number_format($image->image_size/1000, 2); ?> KB)</h5>
-                                <a href="javascript:void(0);" 
-                                onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/remove?id=<?= $image->image_id; ?>'">
-                                <i class="far fa-trash-alt"></i> 削除</a>
+                            <h5><?= $images[$i]->image_name; ?> (<?= number_format($images[$i]->image_size/1000, 2); ?> KB)</h5>
+                                <form action="{{ route('images.destroy', $images[$i]->image_id) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" onclick="return confirm('本当に削除しますか？')">
+                                        <i class="far fa-trash-alt"></i>
+                                        削除
+                                    </button>
+                                </form>
                             </div>
                         </li>
-                    @endforeach
+                    @endfor
                 </ul>
             </div>
             <!-- store image -->
             <div class="col-md-4 pt-4 pl-4">
-                <form method="post" enctype="multipart/form-data">
+                <form action="{{ route('images.store') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label>画像を選択</label>
@@ -68,7 +73,7 @@
         <div class="carousel-inner">
             <?php for ($i = 0; $i < count($images); $i++): ?>
                 <div class="carousel-item <?php if ($i == 0) echo 'active'; ?>">
-                <img src="image?id=<?= $images[$i]->image_id; ?>" class="d-block w-100">
+                <img src="images/<?= $images[$i]->image_id; ?>" class="d-block w-100">
                 </div>
             <?php endfor; ?>
         </div>
