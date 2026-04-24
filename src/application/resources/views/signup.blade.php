@@ -54,9 +54,13 @@
             </p>
         </div>
         <input type="submit" id="btn" class="btn btn-primary" value="新規登録">
-        <?php if ($err_msg != ''): ?>
-            <div class="invalid-feedback d-block"><?= $err_msg; ?></div>
-        <?php endif; ?>
+        @if ($errors->any())
+        <div class="invalid-feedback d-block">
+            @foreach ($errors->all() as $error)
+                <p> {{ $error }} </p>
+            @endforeach
+        </div>
+        @endif
         <br>
         <p id="lnk">すでに登録済みの方は<a href="/login">こちら</a></p>
         </form>

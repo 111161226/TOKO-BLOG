@@ -1,7 +1,3 @@
-<?php
-    $err_msg = '';
-?>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -38,11 +34,15 @@
             </label>
         </div>
         <input type="submit" id="btn" class="btn btn-primary" value="ログイン">
-        <?php if ($err_msg != ''): ?>
-            <div class="invalid-feedback d-block"><?= $err_msg; ?></div>
-        <?php endif; ?>
+        @if ($errors->any())
+            <div class="invalid-feedback d-block">
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
         <br>
-        <p id="lnk">新規登録する方は<a href="/signup">こちら</a></p>
+        <p id="lnk">新規登録する方は<a href="/register">こちら</a></p>
         </form>
     </div>
 </div>
