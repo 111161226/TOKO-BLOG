@@ -28,28 +28,28 @@ class RegisterController extends Controller
         // 2. 登録処理（トランザクションで複数テーブルへの保存を保護）
         DB::transaction(function () use ($request) {
             $userId = (string) Str::uuid();
+            $imageId = (string) Str::uuid();
 
             // ユーザー保存
             DB::table('users')->insert([
                 'user_id' => $userId,
                 'user_name' => $request->username,
                 'password' => Hash::make($request->pass),
+                'thumnail_id' => $imageId,
             ]);
 
             // サムネイル保存
             $file = $request->file('thumnail');
-            DB::table('user_thumnail')->insert([
-                'u_id' => $userId,
-                'image_id' => (string) Str::uuid(),
+            DB::table('images')->insert([
+                'image_id' => $imageId,
                 'image_name' => $file->getClientOriginalName(),
                 'image_type' => $file->getMimeType(),
                 'image_content' => file_get_contents($file->getRealPath()),
                 'image_size' => $file->getSize(),
-                'updated_at' => now(),
             ]);
         });
 
         // 3. 完了後の移動
-        return redirect()->route('login')->with('success', '登録が完了しました！');
+        return redirect('/')->with('success', '登録が完了しました！');
     }
 }

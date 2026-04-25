@@ -13,7 +13,7 @@ Additionally, please execute the command below to generate app_key
   $ php artisan key:generate
 ```
 
-this soft is started by the follwing command and access `localhost:8000/home`
+this soft is started by the follwing command and access `localhost:8000`
 ```
   $ make dev 
 ```

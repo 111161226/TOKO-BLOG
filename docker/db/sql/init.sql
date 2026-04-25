@@ -18,6 +18,7 @@ CREATE TABLE `users` (
   `user_id` VARCHAR(50) NOT NULL,
   `user_name` VARCHAR(30) NOT NULL,
   `password` VARCHAR(90) NOT NULL,
+  `thumnail_id` VARCHAR(50) NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `user_name` (`user_name`)
@@ -63,18 +64,4 @@ CREATE TABLE `blog_owner` (
   `b_id` VARCHAR(50) NOT NULL,
   `author_id` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`b_id`, `author_id`) -- これを追加
-) DEFAULT CHARSET=utf8mb4;
-
-/* table for user thumnail */
-DROP TABLE IF EXISTS `user_thumnail`;
-
-CREATE TABLE `user_thumnail` (
-  `u_id` VARCHAR(50) NOT NULL,
-  `image_id` VARCHAR(50) NOT NULL,
-  `image_name` varchar(256) NOT NULL,
-  `image_type` varchar(64) NOT NULL,
-  `image_content` MEDIUMBLOB,
-  `image_size` int DEFAULT 0,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`image_id`, `u_id`)
 ) DEFAULT CHARSET=utf8mb4;

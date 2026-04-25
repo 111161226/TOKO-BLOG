@@ -1,6 +1,6 @@
 <nav>
     <ul class="nav flex-column m-0 p-3">
-        <li class="nav-item mb-2"><a href="/home" class="nav-link">Album</a></li>
+        <li class="nav-item mb-2"><a href="/" class="nav-link">Album</a></li>
         <li class="nav-item mb-2"><a href="/search" class="nav-link">Search</a></li>
         <li class="nav-item mb-2"><a href="/lblog" class="nav-link">Blog</a></li>
         <li class="nav-item mb-2"><a href="/profile" class="nav-link">Profile</a></li>

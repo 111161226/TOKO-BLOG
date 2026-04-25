@@ -1,21 +1,3 @@
-@include('functions')
-<?php
-    $pdo = connectDB();
-    $err_msg = '';
-    
-    //get all blogs from db
-    try{
-        $sql = 'SELECT user_name, image_id FROM `users` INNER JOIN user_thumnail ON u_id = user_id WHERE user_id = :user_id';
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
-        $stmt->execute();
-        $user = $stmt->fetch();
-    } catch(Exception $error){
-        echo "failed to get user info" . $error->getMessage();
-        exit();
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -49,30 +31,30 @@
     <div class="body">
         <h1 id="head">プロフィール</h1>
         <div class="d-flex align-items-center justify-content-center">
-            <form method="post" enctype="multipart/form-data">
+            <form action="{{ route('user.update') }}" method="post" enctype="multipart/form-data">
                 @csrf
+                @method('PATCH')
                 <div class="form-group"> 
                     <div>
                         <label>
-                            ユーザー名： <input type="text" name="username" value="<?= $user['user_name'];?>" required>
+                            ユーザー名： <input type="text" name="user_name" value="<?= $user['user_name'];?>" required>
                         </label>
                     </div>
                     <div>
                         <label>
-                            現在のパスワード： <input type="password" name="pass" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30" required>
+                            現在のパスワード： <input type="password" name="current_password" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30">
                         </label>
                     </div>
                     <div>
                         <label>
-                            新しいパスワード： <input type="password" name="newpass" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30">
+                            新しいパスワード： <input type="password" name="new_password" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30">
                         </label>
                     </div>
                     <p>
                         サムネイル：
-                        <input type="hidden" name="tid" value="<?= $user['image_id'];?>">
                         <input name="thumnail" type="file" accept=".jpg,.jpeg,.png" onchange="previewImage(this);">
                         <p class="text-center" id="thum">
-                            <img id="preview" src="thumnail?id=<?= $user['image_id']; ?>" class="mr-3"> 
+                            <img id="preview" src="images/<?= $user['thumnail_id']; ?>" class="mr-3"> 
                             <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
                         </p>
                     </p>

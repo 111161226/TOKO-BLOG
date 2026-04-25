@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,8 +22,6 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 
 Route::post('/login', [LoginController::class, 'login']);
 
-Route::delete('/logout', [LoginController::class, 'logout'])->name('logout');
-
 Route::get('/register', [RegisterController::class, 'showRegistrationForm']);
 
 Route::post('/register', [RegisterController::class, 'register']);
@@ -33,6 +32,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('images', ImageController::class)->only([
         'index', 'show', 'store', 'destroy'
     ]);
+
+    Route::get('/profile', [UserController::class, 'show'])->name('user.show');
+    
+    Route::patch('/profile', [UserController::class, 'update'])->name('user.update');
     
     Route::resource('blog', BlogController::class);
     
@@ -72,19 +75,9 @@ Route::middleware(['auth'])->group(function () {
         return view('searchblog');
     });
 
-    Route::get('/logout', function() {
-        return view('logout');
-    });
-
-    Route::get('/profile', function() {
-        return view('profile');
-    });
-
-    Route::post('/profile', function() {
-        return view('uprofile');
-    });
-
     Route::get('/thumnail', function() {
         return view('thumnail');
     });
+
+    Route::delete('/logout', [LoginController::class, 'logout'])->name('logout');
 });
