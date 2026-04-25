@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\ImageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,26 +17,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 
-Route::group(['middleware' => ['guest']], function () {
-    Route::get('/home', function(){
-        return view('home');
-    });
+Route::post('/login', [LoginController::class, 'login']);
+
+Route::delete('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::get('/register', [RegisterController::class, 'showRegistrationForm']);
+
+Route::post('/register', [RegisterController::class, 'register']);
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [ImageController::class, 'index']);
+
+    Route::resource('images', ImageController::class)->only([
+        'index', 'show', 'store', 'destroy'
+    ]);
     
-    Route::post('/home', function() {
-        return view('upload');
-    });
-    
-    Route::get('/image', function() {
-        return view('image');
-    });
-    
-    Route::get('/remove', function() {
-        return view('delete');
-    });
+    Route::resource('blog', BlogController::class);
     
     Route::get('/mblog', function() {
         return view('makeblog');
@@ -85,20 +87,4 @@ Route::group(['middleware' => ['guest']], function () {
     Route::get('/thumnail', function() {
         return view('thumnail');
     });
-});
-
-Route::get('/login', function() {
-    return view('login');
-});
-
-Route::get('/signup', function() {
-    return view('signup');
-});
-
-Route::post('/login', function() {
-    return view('getuser');
-});
-
-Route::post('/signup', function() {
-    return view('register');
 });

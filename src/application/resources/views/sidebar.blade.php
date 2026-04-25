@@ -4,7 +4,20 @@
         <li class="nav-item mb-2"><a href="/search" class="nav-link">Search</a></li>
         <li class="nav-item mb-2"><a href="/lblog" class="nav-link">Blog</a></li>
         <li class="nav-item mb-2"><a href="/profile" class="nav-link">Profile</a></li>
-        <li class="nav-item mb-2"><a href="/logout" class="nav-link">Logout</a></li>
+        <li class="nav-item mb-2">
+            {{-- ログアウト用の隠しフォーム --}}
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+                @method('DELETE')
+            </form>
+
+            {{-- リンクをクリックした時にJavaScriptで上のフォームを送信 --}}
+            <a href="javascript:void(0);" 
+            class="nav-link" 
+            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                Logout
+            </a>
+        </li>
     </ul>
 </nav>
 <style type="text/css">

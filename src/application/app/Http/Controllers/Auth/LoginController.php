@@ -30,4 +30,19 @@ class LoginController extends Controller
         $err_msg = 'ユーザー名またはパスワードが間違っています。';
         return back()->withErrors(compact('err_msg'));
     }
+
+    public function logout(Request $request)
+    {
+        // 1. Laravelの認証システムからログアウトさせる
+        Auth::logout();
+
+        // 2. 現在のセッションデータをすべてクリアする (session_destroyに近い)
+        $request->session()->invalidate();
+
+        // 3. CSRFトークンを再生成する (セキュリティ上の定石)
+        $request->session()->regenerateToken();
+
+        // 4. ログイン画面へリダイレクト
+        return redirect('/login')->with('success', 'ログアウトしました');
+    }
 }
