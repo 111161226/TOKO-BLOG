@@ -43,6 +43,7 @@ CREATE TABLE `blogs` (
   `content` TEXT NOT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `thumnail_id` VARCHAR(50) NOT NULL,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `c_id` int NOT NULL,
   UNIQUE KEY `blog_id` (`blog_id`),
   PRIMARY KEY (`blog_id`)

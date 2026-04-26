@@ -1,21 +1,3 @@
-@include('functions')
-<?php
-    $pdo = connectDB();
-    $err_msg = '';
-    
-    //get all blogs from db
-    try{
-        $sql = 'SELECT `blog_id`, `title`, `thumnail_id` FROM `blogs` INNER JOIN blog_owner ON b_id = blog_id WHERE author_id = :user_id ORDER BY `created_at` DESC';
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
-        $stmt->execute();
-        $blogs = $stmt->fetchAll();
-    } catch(Exception $error){
-        echo "failed to get blogs" . $error->getMessage();
-        exit();
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -48,17 +30,21 @@
                     <?php for ($i = 0; $i < count($blogs); $i++): ?>
                         <li class="media mt-5">
                             <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                                <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" width="80" height="auto" class="mr-3">
+                                <img src="images/<?= $blogs[$i]->thumnail_id; ?>" width="80" height="auto" class="mr-3">
                             </a>
                             <div class="media-body">
                             <h3> 
-                                <a href="/sblog?id=<?= $blogs[$i]['blog_id']; ?>">
-                                    <?= $blogs[$i]['title']; ?>
-                            </a>
+                                <a href="/blog/<?= $blogs[$i]->blog_id; ?>">
+                                    <?= $blogs[$i]->title; ?>
+                                </a>
                             </h3>
-                                <a href="javascript:void(0);" 
-                                onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/dblog?id=<?= $blogs[$i]['blog_id']; ?>'">
-                                <i class="far fa-trash-alt"></i> 削除</a>
+                                <form action="{{ route('blog.destroy', ['blog' => $blogs[$i]->blog_id]) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-link p-0 text-danger" onclick="return confirm('本当に削除しますか？')">
+                                        <i class="far fa-trash-alt"></i> 削除
+                                    </a>
+                                </form>
                             </div>
                         </li>
                     <?php endfor; ?>
@@ -66,7 +52,7 @@
             </div>
             <!-- add article -->
             <div class="col-md-4 pt-4 pl-4">
-                <button onclick="location.href='/mblog'" class="btn btn-primary">追加</button>
+                <button onclick="location.href='/blog/create'" class="btn btn-primary">追加</button>
             </div>
         </div>
     </div>
@@ -86,7 +72,7 @@
         <div class="carousel-inner">
             <?php for ($i = 0; $i < count($blogs); $i++): ?>
                 <div class="carousel-item <?php if ($i == 0) echo 'active'; ?>">
-                <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" class="d-block w-100">
+                <img src="images/<?= $blogs[$i]->thumnail_id; ?>" class="d-block w-100">
                 </div>
             <?php endfor; ?>
         </div>

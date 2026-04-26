@@ -1,26 +1,3 @@
-@include('functions')
-<?php
-    $pdo = connectDB();
-    $err_msg = '';
-    
-    //get blog info from db
-    try {
-        $sql = 'SELECT blog_id, author_id, title, content, thumnail_id FROM `blogs` INNER JOIN blog_owner ON b_id = blog_id WHERE blog_id = :blog_id';
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':blog_id', $_GET['id'], PDO::PARAM_STR);
-        $stmt->execute();
-        $blog = $stmt->fetch();
-    } catch (Exception $error) {
-        echo "can't get blog info" . $error->getMessage();
-        exit();
-    }
-
-    //get username
-    if($blog['author_id'] != $_SESSION['id']) {
-        $author = getuserinfo($blog['author_id']);
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -57,31 +34,30 @@
     </div>
     <div class="body">
         <!-- administer view -->
-        <? if ($blog['author_id'] == $_SESSION['id']): ?>
+        <? if ($blog->author_id == $userId): ?>
             <div class="row">
                 <div class="col-md-8 border-right">
                     <div id="blog">
                     <!-- show blog -->
-                    <h1> <?= $blog['title']; ?> </h1>
+                    <h1> <?= $blog->title; ?> </h1>
                 <!--    <ul class="list-unstyled"> -->
-                        @csrf
-                        
+                    @csrf    
                     <a href="#lightbox" data-toggle="modal">
-                        <img id="thum" src="image?id=<?= $blog['thumnail_id']; ?>" class="mr-3">
+                        <img id="thum" src="../images/<?= $blog->thumnail_id; ?>" class="mr-3">
                     </a>
                     </div>
                     <div class="media-body" id="art">
-                    <br>
-                    <p style="padding-left: 20px;"> {!! Str::markdown($blog['content'], [
-                        'html_input' => 'escape',
-                        ]) !!}
+                        <br>
+                        <p style="padding-left: 20px;"> {!! Str::markdown($blog->content, [
+                            'html_input' => 'escape',
+                            ]) !!}
                     </div>
                     <!-- </ul> -->
                 </div>
                 <!-- edit article -->
                 <div class="col-md-4 pt-4 pl-4">
-                    <button onclick="location.href='/eblog?id=<?= $blog['blog_id']; ?>'" class="btn btn-primary">編集</button>
-                    <button onclick="location.href='/lblog'" class="btn btn-link">一覧に戻る</button>
+                    <button onclick="location.href='/blog/<?= $blog->blog_id; ?>/edit'" class="btn btn-primary">編集</button>
+                    <button onclick="location.href='/blog'" class="btn btn-link">一覧に戻る</button>
                 </div>
             </div>
         <!-- view only -->
@@ -89,20 +65,20 @@
             <!-- show blog -->
             <div id="blog">
                 <ul class="list-unstyled">
-                <h1> <?= $blog['title']; ?> </h1>
+                <h1> <?= $blog->title; ?> </h1>
                 @csrf
                 <a href="#lightbox" data-toggle="modal">
-                    <img id="view" src="image?id=<?= $blog['thumnail_id']; ?>" class="mr-3">
+                    <img id="view" src="../images/<?= $blog->thumnail_id; ?>" class="mr-3">
                 </a>
                 </ul>
             </div>
             <div class="media-body" id="art">
                 <br>
-                <p style="padding-left: 20px;"> {!! Str::markdown($blog['content'], [
+                <p style="padding-left: 20px;"> {!! Str::markdown($blog->content, [
                     'html_input' => 'escape',
                     ]) !!}
             </div>
-            <h>ユーザー: <?= $author['user_name']; ?> <img id="author" src="thumnail?id=<?= $author['image_id']; ?>" class="mr-3"> </h>
+            <h>ユーザー: <?= $blog->author_name; ?> <img id="author" src="../images/<?= $blog->author_thumnail; ?>" class="mr-3"> </h>
         <? endif ?>
         </div>
     </div>
@@ -114,8 +90,7 @@
     <div class="modal-content">
       <div class="modal-body">
         <div class="carousel-inner">
-            <img src="image?id=<?= $blog['thumnail_id']; ?>" class="d-block w-100">
-            </div>
+            <img src="../images/<?= $blog->thumnail_id; ?>" class="d-block w-100">
         </div>
       </div>
     </div>

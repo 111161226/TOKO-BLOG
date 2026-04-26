@@ -1,22 +1,3 @@
-@include('functions')
-<?php
-    $pdo = connectDB();
-    $err_msg = '';
-    
-    //get a blog from db
-    try {
-        $sql = 'SELECT blog_id, title, content, category, thumnail_id FROM `blogs` INNER JOIN `category_list` ON blogs.`c_id` = `category_list`.`c_id`  WHERE blog_id = :blog_id AND exists (
-            SELECT * from blog_owner WHERE blog_id = b_id AND author_id = :uid)';
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':blog_id', $_GET['id'], PDO::PARAM_STR);
-        $stmt->bindValue(':uid', $_SESSION['id'], PDO::PARAM_STR);
-        $stmt->execute();
-        $blog = $stmt->fetch();
-    } catch (Exception $error) {
-        echo "can't get blog" . $error->getMessage();
-        exit();
-    }
-?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -39,22 +20,23 @@
     </div>
     <div class="body bg-success">
         <div class="d-flex align-items-center justify-content-center" height="auto">
-        <form method="post" enctype="multipart/form-data">
+        <form action="{{ route('blog.update', ['blog' => $blog->blog_id]) }}" method="post" enctype="multipart/form-data">
             <div class="form-group">    
                 @csrf
+                @method('PUT')
                 <h1 class="text-center"> ブログ編集</h1><br>
-                <input type="hidden" name="id" value="<?= $blog['blog_id'];?>">
-                <input type="hidden" name="tid" value="<?= $blog['thumnail_id'];?>">
-                <p>新しいカテゴリ：<input name="category" type="text" value="<?= $blog['category']; ?>" required>
-                <p>新しいタイトル：<input name="title" type="text"  value="<?= $blog['title'];?>" required>
+                <input type="hidden" name="id" value="<?= $blog->blog_id;?>">
+                <input type="hidden" name="tid" value="<?= $blog->thumnail_id;?>">
+                <p>新しいカテゴリ：<input name="category" type="text" value="<?= $blog->category; ?>" required>
+                <p>新しいタイトル：<input name="title" type="text"  value="<?= $blog->title;?>" required>
                 <p>新しいサムネイル： <input name="thumnail" type="file" accept=".jpg,.jpeg,.png" onchange="previewImage(this);">
                 <br>
 
                 <p class="text-center">
-                    <img id="preview" src="image?id=<?= $blog['thumnail_id']; ?>" style="max-width:200px;" height="auto" class="mr-3"> 
+                    <img id="preview" src="../../images/<?= $blog->thumnail_id; ?>" style="max-width:200px;" height="auto" class="mr-3"> 
                     <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="max-width:200px;"> 
                 </p>
-                <p>本文：<br><textarea name="content" cols="50" rows="50" required><?= $blog['content']; ?></textarea>
+                <p>本文：<br><textarea name="content" cols="50" rows="50" required><?= $blog->content; ?></textarea>
                 <p><input type="submit" id="btn" class="btn btn-primary" value="更新">
             </div>
         </form>

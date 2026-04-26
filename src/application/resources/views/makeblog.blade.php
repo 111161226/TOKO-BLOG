@@ -20,7 +20,7 @@
     </div>
     <div class="body">
         <div class="d-flex align-items-center justify-content-center" height="auto">
-        <form method="post" enctype="multipart/form-data">
+        <form action="/blog" method="post" enctype="multipart/form-data">
             <div class="form-group">    
                 @csrf
                 <h1 class="text-center"> ブログ作成</h1><br>
