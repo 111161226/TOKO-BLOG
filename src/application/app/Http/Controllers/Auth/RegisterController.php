@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -25,9 +26,10 @@ class RegisterController extends Controller
             'thumnail' => 'required|image|max:2048',
         ]);
 
+        $userId = (string) Str::uuid();
+
         // 2. 登録処理（トランザクションで複数テーブルへの保存を保護）
-        DB::transaction(function () use ($request) {
-            $userId = (string) Str::uuid();
+        DB::transaction(function () use ($request, $userId) {
             $imageId = (string) Str::uuid();
 
             // ユーザー保存
@@ -49,7 +51,8 @@ class RegisterController extends Controller
             ]);
         });
 
-        // 3. 完了後の移動
+        Auth::loginUsingId($userId);
+
         return redirect('/')->with('success', '登録が完了しました！');
     }
 }
