@@ -1,42 +1,3 @@
-@include('functions')
-<?php
-    $pdo = connectDB();
-    $blogs = [];
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if(!($_POST["title"] == '' && $_POST["category"] == '')){
-            //get all blogs from db
-            try {
-                $sql = "SELECT blog_id, title, content, category, thumnail_id FROM `blogs` INNER JOIN `category_list` ON blogs.`c_id` = `category_list`.`c_id`  
-                        WHERE title LIKE '%".$_POST["title"]."%' AND category LIKE '%".$_POST["category"]."%' AND not exists (
-                            SELECT * from blog_owner WHERE author_id = :user_id AND blog_id = b_id) ORDER BY `created_at` DESC";
-                $stmt = $pdo->prepare($sql);
-                $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
-                $stmt->execute();
-                $blogs = $stmt->fetchAll();
-            } catch (Exception $error) {
-                echo "can't get blog" . $error->getMessage();
-                exit();
-            }
-        }
-    }
-    $authors = array();
-    for ($i=0; $i < count($blogs); $i++) {
-        //get blog info from db
-        try {
-            $sql = 'SELECT blog_id, author_id, title, content, thumnail_id FROM `blogs` INNER JOIN blog_owner ON b_id = blog_id WHERE blog_id = :blog_id';
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindValue(':blog_id', $blogs[$i]['blog_id'], PDO::PARAM_STR);
-            $stmt->execute();
-            $tmp = $stmt->fetch();
-        } catch (Exception $error) {
-            echo "can't get blog info" . $error->getMessage();
-            exit();
-        }
-        $authorname = getuserinfo($tmp['author_id']);
-        array_push($authors, $authorname['user_name']);
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -58,8 +19,7 @@
     </div>
     <div class="body">
         <h1 id="head">ブログ検索</h1>
-        <form method="post">
-            @csrf
+        <form method="get" action="{{ route('blog.search') }}">
             <p class="text-center">
             <br>
             <label>タイトル&nbsp;</label> <input type="text" name="title">
@@ -74,15 +34,16 @@
                     <?php for ($i = 0; $i < count($blogs); $i++): ?>
                         <li class="media mt-5">
                             <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                                <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" width="80" height="auto" class="mr-3">
+                                <img src="../images/<?= $blogs[$i]->thumnail_id; ?>" width="80" height="auto" class="mr-3">
                             </a>
                             <div class="media-body">
                             <h3> 
-                                <a href="/sblog?id=<?= $blogs[$i]['blog_id']; ?>">
-                                    <?= $blogs[$i]['title']; ?>
+                                <a href="/blog/<?= $blogs[$i]->blog_id; ?>">
+                                    <?= $blogs[$i]->title; ?>
                                 </a>
                             </h3>
-                            <label> ユーザー: <?= $authors[$i]; ?></label>
+                            <label> ユーザー: <?= $blogs[$i]->author_name; ?></label>
+                            <img src="../images/<?= $blogs[$i]->author_thumnail; ?>" width="30" height="auto" class="ml-2">
                             </div>
                         </li>
                     <?php endfor; ?>
@@ -106,7 +67,7 @@
         <div class="carousel-inner">
             <?php for ($i = 0; $i < count($blogs); $i++): ?>
                 <div class="carousel-item <?php if ($i == 0) echo 'active'; ?>">
-                <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" class="d-block w-100">
+                <img src="../images/<?= $blogs[$i]->thumnail_id; ?>" class="d-block w-100">
                 </div>
             <?php endfor; ?>
         </div>

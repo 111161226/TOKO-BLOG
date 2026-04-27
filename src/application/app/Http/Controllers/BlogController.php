@@ -273,4 +273,40 @@ class BlogController extends Controller
 
         return redirect()->route('blog.index')->with('success', 'ブログを削除しました');
     }
+
+    public function search(Request $request)
+    {
+        $userId = Auth::id();
+        $title = $request->query('title');
+        $category = $request->query('category');
+        
+        $blogs = [];
+
+        // 何かキーワードが入っている時だけ検索を実行
+        if ($request->filled('title') || $request->filled('category')) {
+            $query = DB::table('blogs')
+                ->join('category_list', 'blogs.c_id', '=', 'category_list.c_id')
+                ->join('blog_owner', 'blogs.blog_id', '=', 'blog_owner.b_id')
+                ->join('users', 'blog_owner.author_id', '=', 'users.user_id')
+                ->select(
+                    'blogs.*',
+                    'users.user_name as author_name',
+                    'users.thumnail_id as author_thumnail',
+                    'category_list.category as category_name'
+                )
+                ->where('blog_owner.author_id', '!=', $userId);
+
+            if ($request->filled('title')) {
+                $query->where('blogs.title', 'LIKE', "%{$title}%");
+            }
+
+            if ($request->filled('category')) {
+                $query->where('category_list.category', 'LIKE', "%{$category}%");
+            }
+
+            $blogs = $query->orderBy('blogs.created_at', 'desc')->get();
+        }
+
+        return view('searchblog', compact('blogs', 'title', 'category'));
+    }
 }

@@ -36,16 +36,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [UserController::class, 'show'])->name('user.show');
     
     Route::patch('/profile', [UserController::class, 'update'])->name('user.update');
+
+    Route::get('/blog/search', [BlogController::class, 'search'])->name('blog.search');
     
     Route::resource('blog', BlogController::class);
-
-    Route::get('/search', function() {
-        return view('searchblog');
-    });
-
-    Route::post('/search', function() {
-        return view('searchblog');
-    });
 
     Route::delete('/logout', [LoginController::class, 'logout'])->name('logout');
 });
