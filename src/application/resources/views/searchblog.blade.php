@@ -10,6 +10,11 @@
             text-align : center;
             background-color:#1e93c1;
         }
+        #author {
+            border-radius: 50%;  /* turn into radius */
+            width:  50px;       /* set width */
+            height: 40px;       /* set height */
+        } 
     </style>
 </head>
 <body>
@@ -22,9 +27,9 @@
         <form method="get" action="{{ route('blog.search') }}">
             <p class="text-center">
             <br>
-            <label>タイトル&nbsp;</label> <input type="text" name="title">
-            <label>&nbsp;カテゴリー&nbsp;</label> <input type="text" name="category"> &nbsp; 
-            <input type="submit" name="submit" value="検索">
+            <label>タイトル&nbsp;</label> <input type="text" name="title" value="{{ $title }}">
+            <label>&nbsp;カテゴリー&nbsp;</label>  <input type="text" name="category" value="{{ $category }}">
+            <input type="submit" value="検索">
             </p>
         </form>
         <div class="col-md-8 border-right">
@@ -42,8 +47,7 @@
                                     <?= $blogs[$i]->title; ?>
                                 </a>
                             </h3>
-                            <label> ユーザー: <?= $blogs[$i]->author_name; ?></label>
-                            <img src="../images/<?= $blogs[$i]->author_thumnail; ?>" width="30" height="auto" class="ml-2">
+                            <h> ユーザー: <?= $blogs[$i]->author_name; ?> <img src="../images/<?= $blogs[$i]->author_thumnail; ?>" id="author" class="mr-3"> </h>
                             </div>
                         </li>
                     <?php endfor; ?>
@@ -84,6 +88,7 @@
     </div>
   </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
