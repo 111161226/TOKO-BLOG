@@ -24,35 +24,50 @@
     </div>
     <div class="body">
         <h1 id="head">ブログ検索</h1>
+        
+        {{-- 検索フォーム --}}
         <form method="get" action="{{ route('blog.search') }}">
             <p class="text-center">
-            <br>
-            <label>タイトル&nbsp;</label> <input type="text" name="title" value="{{ $title }}">
-            <label>&nbsp;カテゴリー&nbsp;</label>  <input type="text" name="category" value="{{ $category }}">
-            <input type="submit" value="検索">
+                <br>
+                <label>タイトル&nbsp;</label> <input type="text" name="title" value="{{ $title }}">
+                <label>&nbsp;カテゴリー&nbsp;</label> <input type="text" name="category" value="{{ $category }}"> &nbsp; 
+                <input type="submit" value="検索">
             </p>
         </form>
-        <div class="col-md-8 border-right">
-                <!-- show blog -->
-                <ul class="list-unstyled">
-                    @csrf
-                    <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                        <li class="media mt-5">
-                            <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                                <img src="../images/<?= $blogs[$i]->thumnail_id; ?>" width="80" height="auto" class="mr-3">
-                            </a>
-                            <div class="media-body">
-                            <h3> 
-                                <a href="/blog/<?= $blogs[$i]->blog_id; ?>">
-                                    <?= $blogs[$i]->title; ?>
-                                </a>
-                            </h3>
-                            <h> ユーザー: <?= $blogs[$i]->author_name; ?> <img src="../images/<?= $blogs[$i]->author_thumnail; ?>" id="author" class="mr-3"> </h>
-                            </div>
-                        </li>
-                    <?php endfor; ?>
-                </ul>
-            </div>
+
+        <div class="result-area mt-5">
+            <ul class="list-unstyled">
+                @forelse ($blogs as $i => $blog)
+                    {{-- 検索結果がある場合の表示 --}}
+                    <li class="media mb-4 p-3 border-bottom">
+                        <a href="#lightbox" data-toggle="modal" data-slide-to="{{ $i }}">
+                            <img src="{{ route('images.show', $blog->thumnail_id) }}" width="80" class="mr-3">
+                        </a>
+                        <div class="media-body">
+                            <h3><a href="{{ route('blog.show', $blog->blog_id) }}">{{ $blog->title }}</a></h3>
+                            <p>ユーザー: {{ $blog->author_name }} <img src="{{ route('images.show', $blog->author_thumnail) }}" id="author" class="ml-2"></p>
+                        </div>
+                    </li>
+                @empty
+                    {{-- 検索結果が空（中央寄せを確実に適用） --}}
+                    <div class="d-flex justify-content-center mt-5" style="width: 100%;">
+                        <div class="text-center" style="max-width: 600px;">
+                            @if(!empty($title) || !empty($category))
+                                <h4 class="text-secondary">
+                                    <i class="fas fa-search-minus fa-2x mb-3"></i><br>
+                                    「{{ $title ?: '全タイトル' }}」「{{ $category ?: '全カテゴリ' }}」に一致するブログは見つかりませんでした。
+                                </h4>
+                                <p class="text-muted mt-3">キーワードを変えて再度お試しください。</p>
+                            @else
+                                <h4 class="text-secondary">
+                                    <i class="fas fa-search fa-3x mb-3"></i><br>
+                                    キーワードを入力して、<br>他人のブログを探してみましょう！
+                                </h4>
+                            @endif
+                        </div>
+                    </div>
+                @endforelse
+            </ul>
         </div>
     </div>
 </div>

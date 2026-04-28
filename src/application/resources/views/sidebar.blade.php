@@ -29,13 +29,13 @@
         max-height: none;
         margin:0;
         padding: 0;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .sidebar {
         width: 20%;
         height: 100vh;
         background-color: gray;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .body {
         padding: 10px;

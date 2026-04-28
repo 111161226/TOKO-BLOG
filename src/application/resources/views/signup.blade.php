@@ -1,7 +1,3 @@
-<?php
-    $err_msg = '';
-?>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
