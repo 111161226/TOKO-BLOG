@@ -10,6 +10,9 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            return redirect('/'); 
+        }
         $err_msgs = [''];
         return view('login', compact('err_msgs'));
     }
