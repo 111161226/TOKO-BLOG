@@ -27,14 +27,14 @@ class UserController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'user_name' => 'required|string|max:255',
+            'username' => 'required|string|max:255',
             'current_password' => 'nullable|required_with:new_password',
             'new_password' => 'nullable|min:8|confirmed',
             'thumnail' => 'nullable|image|max:2048',
         ]);
 
         $updateData = [
-            'user_name' => $request->user_name,
+            'user_name' => $request->username,
         ];
 
         // パスワード変更
