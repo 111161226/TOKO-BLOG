@@ -1,97 +1,79 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="utf-8">
-    <title>ブログ一覧</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <style type="text/css">
-        #head {
-            text-align : center;
-            background-color:#1e93c1;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="sidebar">
-        @include('sidebar')  
-    </div>
-    <div class="body">
-        <div class="row">
-            <div class="col-md-8 border-right">
-                <!-- show blog -->
-                <h1 id="head"> ブログ一覧 </h1>
-                <?php if (count($blogs) == 0): ?>
-                    <h4> ブログはありません </h4>
-                <?php endif; ?>
-                <ul class="list-unstyled">
-                    @csrf
-                    <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                        <li class="media mt-5">
-                            <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                                <img src="images/<?= $blogs[$i]->thumnail_id; ?>" width="80" height="auto" class="mr-3">
+@extends('layouts.app')
+
+@section('title', 'ブログ一覧')
+@section('header_title', 'マイブログ')
+
+@section('content')
+<div class="row">
+    <div class="col-md-10 border-right">
+        <ul class="list-unstyled">
+            @forelse ($blogs as $i => $blog)
+                <li class="media mb-3 p-3 bg-white shadow-sm rounded border">
+                    <a href="#lightbox" data-toggle="modal" data-slide-to="{{ $i }}">
+                        <img src="{{ route('images.show', $blog->thumnail_id) }}" width="80" class="mr-3 rounded shadow-sm">
+                    </a>
+                    <div class="media-body">
+                        <h3 class="h5 font-weight-bold"> 
+                            <a href="{{ route('blog.show', $blog->blog_id) }}" class="text-dark">
+                                {{ $blog->title }}
                             </a>
-                            <div class="media-body">
-                            <h3> 
-                                <a href="/blog/<?= $blogs[$i]->blog_id; ?>">
-                                    <?= $blogs[$i]->title; ?>
-                                </a>
-                            </h3>
-                                <form action="{{ route('blog.destroy', ['blog' => $blogs[$i]->blog_id]) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-link p-0 text-danger" onclick="return confirm('本当に削除しますか？')">
-                                        <i class="far fa-trash-alt"></i> 削除
-                                    </a>
-                                </form>
-                            </div>
-                        </li>
-                    <?php endfor; ?>
-                </ul>
-            </div>
-            <!-- add article -->
-            <div class="col-md-4 pt-4 pl-4">
-                <button onclick="location.href='/blog/create'" class="btn btn-primary">追加</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- show thumnail ver Enlarge -->
-<div class="modal carousel slide" id="lightbox" tabindex="-1" role="dialog" data-ride="carousel">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <ol class="carousel-indicators">
-            <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                <li data-target="#lightbox" data-slide-to="<?= $i; ?>" <?php if ($i == 0) echo 'class="active"'; ?>></li>
-            <?php endfor; ?>
-        </ol>
-
-        <div class="carousel-inner">
-            <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                <div class="carousel-item <?php if ($i == 0) echo 'active'; ?>">
-                <img src="images/<?= $blogs[$i]->thumnail_id; ?>" class="d-block w-100">
+                        </h3>
+                        <form action="{{ route('blog.destroy', $blog->blog_id) }}" method="POST" class="mt-2">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-link p-0 text-danger" onclick="return confirm('本当に削除しますか？')">
+                                <i class="far fa-trash-alt"></i> 削除
+                            </button>
+                        </form>
+                    </div>
+                </li>
+            @empty
+                <div class="text-center py-5">
+                    <h4 class="text-muted">ブログはありません</h4>
                 </div>
-            <?php endfor; ?>
-        </div>
-
-        <a class="carousel-control-prev" href="#lightbox" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#lightbox" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-      </div>
+            @endforelse
+        </ul>
     </div>
-  </div>
+
+    <div class="col-md-2 pt-5 pl-4 text-center">
+        <a href="{{ route('blog.create') }}" class="btn btn-primary shadow-sm px-3">
+            <i class="fas fa-plus"></i> 追加
+        </a>
+    </div>
 </div>
 
+{{-- 拡大表示用のモーダル --}}
+<div class="modal fade" id="lightbox" tabindex="-1" role="dialog" aria-hidden="true">
+    {{-- 背景クリックで閉じるため、dialog自体に data-dismiss を付与 --}}
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document" data-dismiss="modal" style="cursor: zoom-out;">
+        <div class="modal-content bg-transparent border-0">
+            
+            <div class="text-center mb-1 pr-5">
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="font-size: 2.5rem; opacity: 1; outline: none;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</body>
-</html>
+            <div class="modal-body p-0">
+                {{-- 画像本体：クリックしても閉じないよう stopPropagation を設定 --}}
+                <div id="innerCarousel" class="carousel slide" data-ride="false" onclick="event.stopPropagation();" style="cursor: default;">
+                    <div class="carousel-inner">
+                        @foreach($blogs as $i => $blog)
+                            <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
+                                <img src="{{ route('images.show', $blog->thumnail_id) }}" class="d-block mx-auto img-fluid shadow-lg" style="max-height: 80vh; object-fit: contain;">
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <a class="carousel-control-prev" href="javascript:void(0)" role="button" data-target="#innerCarousel" data-slide="prev" onclick="event.stopPropagation();">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    </a>
+                    <a class="carousel-control-next" href="javascript:void(0)" role="button" data-target="#innerCarousel" data-slide="next" onclick="event.stopPropagation();">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
