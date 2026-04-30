@@ -1,10 +1,22 @@
-FROM php:7.3-fpm
+# 最新の安定版 PHP 8.3 を使用
+FROM php:8.3-fpm
 
-# Nginx, PHP拡張のインストール
-RUN apt-get update && apt-get install -y nginx zlib1g-dev libzip-dev mariadb-client vim \
-    && docker-php-ext-install zip pdo_mysql
+# 設定ファイルをコピー
+COPY php.ini /usr/local/etc/php/
 
-# Composerのインストール [cite: 1]
+RUN apt-get update \
+  && apt-get install -y \
+    zlib1g-dev \
+    libzip-dev \
+    mariadb-client \
+    vim \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+  && docker-php-ext-configure gd --with-freetype --with-jpeg \
+  && docker-php-ext-install -j$(nproc) zip pdo_mysql gd
+
+# Composerの導入
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
@@ -14,6 +26,8 @@ COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
 
 # --- ここからが重要 ---
+ENV COMPOSER_HOME /composer
+ENV PATH $PATH:/composer/vendor/bin
 
 # 1. コンテナの作業ディレクトリを固定
 WORKDIR /var/www/application
@@ -21,6 +35,16 @@ WORKDIR /var/www/application
 # 2. プロジェクトの「中身」をコンテナのルートにコピー
 # こうすることで、コンテナの /var/www/application 直下に artisan や composer.json が来ます
 COPY src/application/ . 
+# Node.js 20.x (LTS) のインストール
+# NodeSourceのリポジトリ設定を最新の推奨形式に変更
+RUN apt-get update && apt-get install -y ca-certificates curl gnupg \
+  && mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+  && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+  && apt-get update && apt-get install nodejs -y
+
+# npmのアップデート（Vue CLIは最近はVite移行が推奨されるため、必要に応じて）
+RUN npm install -g npm@latest
 
 # 3. ライブラリのインストール
 # これにより /var/www/application/vendor が作成されます
