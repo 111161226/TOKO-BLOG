@@ -97,4 +97,16 @@
 .modal-backdrop.show { opacity: 0.85 !important; }
 </style>
 @endpush
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // サムネイル画像（aタグ）をクリックしたとき
+    $('a[data-toggle="modal"]').on('click', function() {
+        // data-slide-to属性から、何番目の画像かを取得
+        var slideTo = $(this).attr('data-slide-to');
+        $('#lightbox').carousel(parseInt(slideTo));
+    });
+});
+</script>
+@endpush
 @endsection
