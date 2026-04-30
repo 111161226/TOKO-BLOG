@@ -1,6 +1,9 @@
 # 最新の安定版 PHP 8.3 を使用
 FROM php:8.3-fpm
 
+RUN apt-get update && apt-get install -y nginx zlib1g-dev libzip-dev mariadb-client vim \
+  && docker-php-ext-install zip pdo_mysql
+
 # 設定ファイルをコピー
 COPY php.ini /usr/local/etc/php/
 
