@@ -5,6 +5,7 @@
     <title>@yield('title')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+    <link rel="icon" type="image/png" href="{{ asset('app-icon.png') }}">
     <style>
         html, body {
             height: 100%;
