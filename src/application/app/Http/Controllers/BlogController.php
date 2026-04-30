@@ -35,7 +35,7 @@ class BlogController extends Controller
      */
     public function create()
     {
-        return view('makeblog');
+        return view('blog');
     }
 
     /**
@@ -155,7 +155,7 @@ class BlogController extends Controller
             abort(404, 'ブログが見つかりません');
         }
 
-        return view('editblog', compact('blog'));
+        return view('blog', compact('blog'));
     }
 
     /**
