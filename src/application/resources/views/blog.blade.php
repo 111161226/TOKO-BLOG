@@ -48,8 +48,41 @@
                     </div>
 
                     <div class="form-group mb-5">
-                        <label style="font-weight: bold; font-size: 1.1rem;">本文 (Markdown形式)</label>
-                        <textarea name="content" class="form-control" rows="15" required style="line-height: 1.6; font-size: 1rem;">{{ $blog->content ?? '' }}</textarea>
+                        <div class="d-flex justify-content-between align-items-end mb-2">
+                            <label style="font-weight: bold; font-size: 1.1rem; margin: 0;">本文 (Markdown形式)</label>
+                            {{-- 画像挿入用：Albumの画像URLをコピーして使う想定のヘルプ --}}
+                            <small class="text-muted">※Albumの画像を `![説明](URL)` で挿入できます</small>
+                        </div>
+
+                        {{-- 簡易ツールバー --}}
+                        <div class="btn-toolbar mb-2 bg-light p-1 border rounded" role="toolbar">
+                            <div class="btn-group mr-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertText('**', '**')" title="太字"><i class="fas fa-bold"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertText('# ', '')" title="見出し"><i class="fas fa-heading"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertText('[', '](url)')" title="リンク"><i class="fas fa-link"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertText('![説明](', ')')" title="画像挿入"><i class="fas fa-image"></i></button>
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertText('- ', '')" title="箇条書き"><i class="fas fa-list-ul"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertText('`', '`')" title="コード"><i class="fas fa-code"></i></button>
+                            </div>
+                        </div>
+
+                        {{-- 入力とプレビューの並列レイアウト --}}
+                        <div class="row m-0 border rounded overflow-hidden" style="background: #fff;">
+                            {{-- エディタ側 --}}
+                            <div class="col-md-6 p-0 border-right">
+                                <textarea id="markdown-editor" name="content" class="form-control border-0 rounded-0" rows="18" 
+                                        style="line-height: 1.6; font-size: 1rem; resize: none;" 
+                                        placeholder="ここに内容を書いてください..." required>{{ $blog->content ?? '' }}</textarea>
+                            </div>
+                            {{-- プレビュー側 --}}
+                            <div class="col-md-6 p-3 bg-light overflow-auto" style="height: 18rem * 1.6;">
+                                <div class="small text-muted mb-2 border-bottom pb-1">リアルタイムプレビュー</div>
+                                <div id="markdown-preview" class="blog-content shadow-none p-0" style="font-size: 0.9rem; line-height: 1.6;">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div style="text-align: center;">
@@ -63,4 +96,59 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    const editor = document.getElementById('markdown-editor');
+    const preview = document.getElementById('markdown-preview');
+
+    // 1. リアルタイムプレビュー機能
+    function updatePreview() {
+        // marked.js を使用してHTMLに変換。セキュリティのためsanitize設定を推奨（ライブラリ仕様により要確認）
+        preview.innerHTML = marked.parse(editor.value);
+    }
+
+    // 入力するたびにプレビューを更新
+    editor.addEventListener('input', updatePreview);
+
+    // 読み込み時に初期実行
+    document.addEventListener('DOMContentLoaded', updatePreview);
+
+    // 2. テキスト挿入機能 (ツールバー用)
+    function insertText(before, after) {
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        const text = editor.value;
+        const selected = text.substring(start, end);
+        
+        // 選択範囲を挟み込む
+        const newText = text.substring(0, start) + before + selected + after + text.substring(end);
+        editor.value = newText;
+        
+        // カーソル位置を調整
+        editor.focus();
+        editor.setSelectionRange(start + before.length, start + before.length + selected.length);
+        
+        // 手動でinputイベントを発火させてプレビューを更新
+        updatePreview();
+    }
+</script>
+@endpush
+@push('css')
+<style>
+#markdown-preview img {
+    max-width: 100%;    /* 親要素の幅に合わせて自動縮小 */
+    height: auto;       /* 縦横比を維持 */
+    display: block;     /* 余計な隙間を消す */
+    margin: 10px auto;  /* 中央寄せ */
+    border-radius: 5px; /* 少し角を丸くして見栄えを良く */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 軽い影をつけて見やすく */
+}
+
+/* プレビュー領域自体のスクロールバーを細くする（お好みで） */
+#markdown-preview-container {
+    scrollbar-width: thin;
+}
+</style>
+@endpush
 @endsection
