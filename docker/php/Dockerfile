@@ -1,14 +1,9 @@
 # 最新の安定版 PHP 8.3 を使用
 FROM php:8.3-fpm
 
-RUN apt-get update && apt-get install -y nginx zlib1g-dev libzip-dev mariadb-client vim \
-  && docker-php-ext-install zip pdo_mysql
-
-# 設定ファイルをコピー
-COPY php.ini /usr/local/etc/php/
-
-RUN apt-get update \
-  && apt-get install -y \
+# パッケージインストールを一回にまとめてビルド時間を短縮
+RUN apt-get update && apt-get install -y \
+    nginx \
     zlib1g-dev \
     libzip-dev \
     mariadb-client \
@@ -16,6 +11,9 @@ RUN apt-get update \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    ca-certificates \
+    curl \
+    gnupg \
   && docker-php-ext-configure gd --with-freetype --with-jpeg \
   && docker-php-ext-install -j$(nproc) zip pdo_mysql gd
 
@@ -42,12 +40,21 @@ COPY src/application/ .
 # NodeSourceのリポジトリ設定を最新の推奨形式に変更
 RUN apt-get update && apt-get install -y ca-certificates curl gnupg \
   && mkdir -p /etc/apt/keyrings \
+# Laravel Installer
+RUN composer global require "laravel/installer"
+
+# 設定ファイルをコピー（画像に基づき、Dockerfileと同じ階層にある php.ini を参照）
+COPY php.ini /usr/local/etc/php/
+
+# Node.js 20.x のインストール (最新の推奨形式)
+RUN mkdir -p /etc/apt/keyrings \
   && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
   && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
-  && apt-get update && apt-get install nodejs -y
+  && apt-get update && apt-get install nodejs -y \
+  && npm install -g npm@latest
 
-# npmのアップデート（Vue CLIは最近はVite移行が推奨されるため、必要に応じて）
-RUN npm install -g npm@latest
+# 作業ディレクトリの設定
+WORKDIR /var/www/application
 
 # 3. ライブラリのインストール
 # これにより /var/www/application/vendor が作成されます
@@ -59,7 +66,10 @@ RUN chmod -R 775 /var/www/application/storage /var/www/application/bootstrap/cac
 
 # 起動
 CMD php-fpm -D && nginx -g "daemon off;"
+# 権限の調整
+RUN chown -R www-data:www-data /var/www/application
 
+# PHPのアップロード設定
 RUN echo "file_uploads = On\n" \
          "memory_limit = 512M\n" \
          "upload_max_filesize = 500M\n" \
