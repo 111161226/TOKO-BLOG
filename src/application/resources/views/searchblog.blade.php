@@ -103,4 +103,17 @@
 }
 </style>
 @endpush
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // サムネイル画像（aタグ）をクリックしたとき
+    $('a[data-toggle="modal"]').on('click', function() {
+        // data-slide-to属性から、何番目の画像かを取得
+        var slideTo = $(this).attr('data-slide-to');
+        // カルーセル（id="searchCarousel"）をその番号まで移動させる
+        $('#searchCarousel').carousel(parseInt(slideTo));
+    });
+});
+</script>
+@endpush
 @endsection

@@ -107,4 +107,15 @@
 .modal-backdrop.show { opacity: 0.85 !important; }
 </style>
 @endpush
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('a[data-toggle="modal"]').on('click', function() {
+        var slideTo = $(this).attr('data-slide-to');
+        // IDを 'searchCarousel' から 'lightboxCarousel' に修正
+        $('#lightboxCarousel').carousel(parseInt(slideTo));
+    });
+});
+</script>
+@endpush
 @endsection
