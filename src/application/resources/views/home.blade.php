@@ -18,7 +18,6 @@
                                 </div>
                             </a>
                             <div class="card-body p-2 text-center">
-                                <p class="small text-truncate mb-1" title="{{ $image->image_name }}">{{ $image->image_name }}</p>
                                 <form action="{{ route('images.destroy', $image->image_id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
