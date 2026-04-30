@@ -1,129 +1,107 @@
-@include('functions')
 <?php
-    $pdo = connectDB();
-    $err_msg = '';
+    // 前のURLを取得
+    $prevUrl = url()->previous();
+    // 検索画面(search)から来たか判定
+    $isFromSearch = str_contains($prevUrl, 'search');
     
-    //get blog info from db
-    try {
-        $sql = 'SELECT blog_id, author_id, title, content, thumnail_id FROM `blogs` INNER JOIN blog_owner ON b_id = blog_id WHERE blog_id = :blog_id';
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':blog_id', $_GET['id'], PDO::PARAM_STR);
-        $stmt->execute();
-        $blog = $stmt->fetch();
-    } catch (Exception $error) {
-        echo "can't get blog info" . $error->getMessage();
-        exit();
-    }
-
-    //get username
-    if($blog['author_id'] != $_SESSION['id']) {
-        $author = getuserinfo($blog['author_id']);
-    }
+    // 戻り先URLとテキストの設定
+    $backUrl = $isFromSearch ? $prevUrl : route('blog.index');
+    $backText = $isFromSearch ? '検索結果に戻る' : '一覧に戻る';
 ?>
+@extends('layouts.app')
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="utf-8">
-    <title>ブログ</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <style type="text/css"> 
-        #blog {
-            text-align : center;
-        }
-        #thum {
-            width: 180px;
-            height: "auto";
-        }
-        #view {
-            width: 200px;
-            height: "auto";
-        }
-        #author {
-            border-radius: 50%;  /* turn into radius */
-            width:  50px;       /* set width */
-            height: 40px;       /* set height */
-        } 
-        #art {
-            overflow-wrap: anywhere
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="sidebar">
-        @include('sidebar')  
-    </div>
-    <div class="body">
-        <!-- administer view -->
-        <? if ($blog['author_id'] == $_SESSION['id']): ?>
-            <div class="row">
-                <div class="col-md-8 border-right">
-                    <div id="blog">
-                    <!-- show blog -->
-                    <h1> <?= $blog['title']; ?> </h1>
-                <!--    <ul class="list-unstyled"> -->
-                        @csrf
-                        
-                    <a href="#lightbox" data-toggle="modal">
-                        <img id="thum" src="image?id=<?= $blog['thumnail_id']; ?>" class="mr-3">
-                    </a>
-                    </div>
-                    <div class="media-body" id="art">
-                    <br>
-                    <p style="padding-left: 20px;"> {!! Str::markdown($blog['content'], [
-                        'html_input' => 'escape',
-                        ]) !!}
-                    </div>
-                    <!-- </ul> -->
-                </div>
-                <!-- edit article -->
-                <div class="col-md-4 pt-4 pl-4">
-                    <button onclick="location.href='/eblog?id=<?= $blog['blog_id']; ?>'" class="btn btn-primary">編集</button>
-                    <button onclick="location.href='/lblog'" class="btn btn-link">一覧に戻る</button>
-                </div>
-            </div>
-        <!-- view only -->
-        <?else:?>
-            <!-- show blog -->
-            <div id="blog">
-                <ul class="list-unstyled">
-                <h1> <?= $blog['title']; ?> </h1>
-                @csrf
-                <a href="#lightbox" data-toggle="modal">
-                    <img id="view" src="image?id=<?= $blog['thumnail_id']; ?>" class="mr-3">
+@section('title', $blog->title)
+@section('header_title', 'ブログ')
+
+@section('content')
+{{-- 外枠：画面いっぱいに広げた上で中身を中央に寄せる --}}
+<div style="width: 100%; display: flex; justify-content: center; padding: 30px 15px;">
+    
+    {{-- メインエリア：最大幅を1000pxに固定して中央配置 --}}
+    <div style="width: 100%; max-width: 1000px;">
+        
+        {{-- 操作ボタンエリア --}}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            {{-- 閲覧用戻るボタン --}}
+            <a href="{{ $backUrl }}" class="btn btn-outline-secondary shadow-sm" style="white-space: nowrap;">
+                <i class="fas fa-arrow-left"></i> {{ $backText }}
+            </a>
+
+            {{-- 著者用編集ボタン --}}
+            @if ($blog->author_id == $userId)
+                <a href="{{ route('blog.edit', $blog->blog_id) }}" class="btn btn-primary shadow-sm" style="white-space: nowrap;">
+                    <i class="fas fa-edit"></i> 編集する
                 </a>
-                </ul>
+            @endif
+        </div>
+
+        {{-- 記事カード本体 --}}
+        <div class="card shadow-sm border-0" style="background-color: #fff; border-radius: 10px; overflow: hidden;">
+            <div class="card-body" style="padding: 50px 40px;">
+                
+                {{-- タイトル --}}
+                <h1 style="text-align: center; font-weight: bold; font-size: 2.2rem; margin-bottom: 40px; line-height: 1.4;">
+                    {{ $blog->title }}
+                </h1>
+
+                {{-- サムネイル：クリックで拡大 --}}
+                <div style="text-align: center; margin-bottom: 50px;">
+                    <a href="#lightbox" data-toggle="modal">
+                        <img src="{{ route('images.show', $blog->thumnail_id) }}" 
+                             style="max-width: 100%; max-height: 500px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: zoom-in;">
+                    </a>
+                </div>
+
+                {{-- 本文 --}}
+                <div class="blog-main-content" style="font-size: 1.1rem; line-height: 2; overflow-wrap: anywhere;">
+                    {!! Str::markdown($blog->content, ['html_input' => 'escape']) !!}
+                </div>
+
+                <hr style="margin: 50px 0; border-top: 1px solid #eee;">
+
+                {{-- 投稿者情報：中央寄せ --}}
+                <div style="display: flex; align-items: center; justify-content: center; background: #f9f9f9; padding: 20px; border-radius: 15px;">
+                    <span style="color: #666; margin-right: 15px;">投稿者: <strong>{{ $blog->author_name }}</strong></span>
+                    <img src="{{ route('images.show', $blog->author_thumnail) }}" 
+                         style="width: 55px; height: 55px; border-radius: 50%; object-circle: cover; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                </div>
+
             </div>
-            <div class="media-body" id="art">
-                <br>
-                <p style="padding-left: 20px;"> {!! Str::markdown($blog['content'], [
-                    'html_input' => 'escape',
-                    ]) !!}
-            </div>
-            <h>ユーザー: <?= $author['user_name']; ?> <img id="author" src="thumnail?id=<?= $author['image_id']; ?>" class="mr-3"> </h>
-        <? endif ?>
         </div>
     </div>
 </div>
 
-<!-- show thumnail ver Enlarge -->
-<div class="modal carousel slide" id="lightbox" tabindex="-1" role="dialog" data-ride="carousel">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <div class="carousel-inner">
-            <img src="image?id=<?= $blog['thumnail_id']; ?>" class="d-block w-100">
+{{-- 拡大モーダル --}}
+<div class="modal fade" id="lightbox" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 text-center">
+                <img src="{{ route('images.show', $blog->thumnail_id) }}" 
+                     class="img-fluid" 
+                     style="max-height: 85vh; border: 3px solid #fff; border-radius: 5px; background: #000;">
             </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
+@push('css')
+<style>
+/* Markdownの微調整 */
+.blog-main-content h1, .blog-main-content h2 { 
+    margin-top: 30px; 
+    margin-bottom: 15px; 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 8px; 
+}
+.blog-main-content p { 
+    margin-bottom: 20px; 
+}
+.blog-main-content img { 
+    max-width: 100%; border-radius: 5px; 
+}
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</body>
-</html>
+/* 背景をしっかり暗く */
+.modal-backdrop.show { opacity: 0.9 !important; }
+</style>
+@endpush
+@endsection

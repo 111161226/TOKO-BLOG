@@ -1,129 +1,119 @@
-@include('functions')
-<?php
-    $pdo = connectDB();
-    $blogs = [];
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if(!($_POST["title"] == '' && $_POST["category"] == '')){
-            //get all blogs from db
-            try {
-                $sql = "SELECT blog_id, title, content, category, thumnail_id FROM `blogs` INNER JOIN `category_list` ON blogs.`c_id` = `category_list`.`c_id`  
-                        WHERE title LIKE '%".$_POST["title"]."%' AND category LIKE '%".$_POST["category"]."%' AND not exists (
-                            SELECT * from blog_owner WHERE author_id = :user_id AND blog_id = b_id) ORDER BY `created_at` DESC";
-                $stmt = $pdo->prepare($sql);
-                $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
-                $stmt->execute();
-                $blogs = $stmt->fetchAll();
-            } catch (Exception $error) {
-                echo "can't get blog" . $error->getMessage();
-                exit();
-            }
-        }
-    }
-    $authors = array();
-    for ($i=0; $i < count($blogs); $i++) {
-        //get blog info from db
-        try {
-            $sql = 'SELECT blog_id, author_id, title, content, thumnail_id FROM `blogs` INNER JOIN blog_owner ON b_id = blog_id WHERE blog_id = :blog_id';
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindValue(':blog_id', $blogs[$i]['blog_id'], PDO::PARAM_STR);
-            $stmt->execute();
-            $tmp = $stmt->fetch();
-        } catch (Exception $error) {
-            echo "can't get blog info" . $error->getMessage();
-            exit();
-        }
-        $authorname = getuserinfo($tmp['author_id']);
-        array_push($authors, $authorname['user_name']);
-    }
-?>
+@extends('layouts.app')
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="utf-8">
-    <title>Search form</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <style type="text/css">
-        #head {
-            text-align : center;
-            background-color:#1e93c1;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="sidebar">
-        @include('sidebar')  
-    </div>
-    <div class="body">
-        <h1 id="head">ブログ検索</h1>
-        <form method="post">
-            @csrf
-            <p class="text-center">
-            <br>
-            <label>タイトル&nbsp;</label> <input type="text" name="title">
-            <label>&nbsp;カテゴリー&nbsp;</label> <input type="text" name="category"> &nbsp; 
-            <input type="submit" name="submit" value="検索">
-            </p>
+@section('title', 'Search')
+@section('header_title', 'ブログ検索')
+
+@section('content')
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+
+    {{-- 検索フォーム：中央にコンパクトに配置 --}}
+    <div style="background: #f8f9fa; padding: 30px; margin-bottom: 30px; border-radius: 8px; text-align: center; border: 1px solid #ddd;">
+        <form method="get" action="{{ route('blog.search') }}" class="form-inline justify-content-center">
+            <div class="form-group mx-2">
+                <label class="mr-2">タイトル</label>
+                <input type="text" name="title" class="form-control" value="{{ $title }}" placeholder="タイトルを入力">
+            </div>
+            <div class="form-group mx-2">
+                <label class="mr-2">カテゴリ</label>
+                <input type="text" name="category" class="form-control" value="{{ $category }}" placeholder="カテゴリを入力">
+            </div>
+            <button type="submit" class="btn btn-primary px-4 ml-2 shadow-sm">
+                <i class="fas fa-search"></i> 検索
+            </button>
         </form>
-        <div class="col-md-8 border-right">
-                <!-- show blog -->
-                <ul class="list-unstyled">
-                    @csrf
-                    <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                        <li class="media mt-5">
-                            <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                                <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" width="80" height="auto" class="mr-3">
-                            </a>
-                            <div class="media-body">
-                            <h3> 
-                                <a href="/sblog?id=<?= $blogs[$i]['blog_id']; ?>">
-                                    <?= $blogs[$i]['title']; ?>
-                                </a>
-                            </h3>
-                            <label> ユーザー: <?= $authors[$i]; ?></label>
+    </div>
+
+    {{-- 検索結果：3x3タイルのグリッド --}}
+    <div class="row">
+        @forelse ($blogs as $i => $blog)
+            <div class="col-6 col-sm-4 col-lg-3 mb-4">
+                <div class="card h-100 shadow-sm border-0" style="overflow: hidden;">
+                    <a href="#lightbox" data-toggle="modal" data-slide-to="{{ $i }}">
+                        <div style="height: 160px; background: #eee;">
+                            <img src="{{ route('images.show', $blog->thumnail_id) }}" class="w-100 h-100" style="object-fit: cover;">
+                        </div>
+                    </a>
+                    <div class="card-body p-2 text-center">
+                        <h3 class="h6 font-weight-bold text-truncate mb-2">
+                            <a href="{{ route('blog.show', $blog->blog_id) }}" class="text-dark">{{ $blog->title }}</a>
+                        </h3>
+                        <div class="d-flex align-items-center justify-content-center pt-2 border-top">
+                            <img src="{{ route('images.show', $blog->author_thumnail) }}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; margin-right: 8px;">
+                            <span class="small text-muted text-truncate">{{ $blog->author_name }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @empty
+            {{-- 結果なしメッセージ --}}
+            <div class="col-12 text-center py-5">
+                <h4 class="text-secondary"><i class="fas fa-search fa-2x mb-3"></i><br>
+                @if(!empty($title) || !empty($category))
+                    一致するブログは見つかりませんでした。
+                @else
+                    キーワードを入力して検索してみましょう！
+                @endif
+                </h4>
+            </div>
+        @endforelse
+    </div>
+</div>
+
+{{-- モーダル部分は変更なし --}}
+<div class="modal fade" id="lightbox" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 text-center">
+                <div id="searchCarousel" class="carousel slide" data-ride="false">
+                    <div class="carousel-inner">
+                        @foreach($blogs as $i => $blog)
+                            <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
+                                <img src="{{ route('images.show', $blog->thumnail_id) }}" class="img-fluid custom-modal-img shadow-lg">
                             </div>
-                        </li>
-                    <?php endfor; ?>
-                </ul>
+                        @endforeach
+                    </div>
+                    <a class="carousel-control-prev custom-arrow" href="#searchCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </a>
+                    <a class="carousel-control-next custom-arrow" href="#searchCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- show image ver Enlarge -->
-<div class="modal carousel slide" id="lightbox" tabindex="-1" role="dialog" data-ride="carousel">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <ol class="carousel-indicators">
-            <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                <li data-target="#lightbox" data-slide-to="<?= $i; ?>" <?php if ($i == 0) echo 'class="active"'; ?>></li>
-            <?php endfor; ?>
-        </ol>
-
-        <div class="carousel-inner">
-            <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                <div class="carousel-item <?php if ($i == 0) echo 'active'; ?>">
-                <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" class="d-block w-100">
-                </div>
-            <?php endfor; ?>
-        </div>
-
-        <a class="carousel-control-prev" href="#lightbox" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#lightbox" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</body>
-</html>
+@push('css')
+<style>
+.custom-modal-img { 
+    max-height: 70vh; 
+    object-fit: contain; 
+    border: 2px solid white; 
+    background: #000; 
+}
+.custom-arrow { 
+    width: 10%; 
+    opacity: 0.8; 
+}
+.carousel-control-prev-icon, .carousel-control-next-icon { 
+    background-color: rgba(0,0,0,0.6);
+    border-radius: 50%; 
+    padding: 20px; 
+}
+</style>
+@endpush
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // サムネイル画像（aタグ）をクリックしたとき
+    $('a[data-toggle="modal"]').on('click', function() {
+        // data-slide-to属性から、何番目の画像かを取得
+        var slideTo = $(this).attr('data-slide-to');
+        // カルーセル（id="searchCarousel"）をその番号まで移動させる
+        $('#searchCarousel').carousel(parseInt(slideTo));
+    });
+});
+</script>
+@endpush
+@endsection

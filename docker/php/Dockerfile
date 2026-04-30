@@ -1,4 +1,5 @@
 FROM php:7.3-fpm
+COPY php.ini /usr/local/etc/php/
 
 # Nginx, PHP拡張のインストール
 RUN apt-get update && apt-get install -y nginx zlib1g-dev libzip-dev mariadb-client vim \
@@ -6,6 +7,7 @@ RUN apt-get update && apt-get install -y nginx zlib1g-dev libzip-dev mariadb-cli
 
 # Composerのインストール [cite: 1]
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # 設定ファイルのコピー [cite: 2]

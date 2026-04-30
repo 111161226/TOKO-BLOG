@@ -1,10 +1,23 @@
 <nav>
     <ul class="nav flex-column m-0 p-3">
-        <li class="nav-item mb-2"><a href="/home" class="nav-link">Album</a></li>
-        <li class="nav-item mb-2"><a href="/search" class="nav-link">Search</a></li>
-        <li class="nav-item mb-2"><a href="/lblog" class="nav-link">Blog</a></li>
+        <li class="nav-item mb-2"><a href="/" class="nav-link">Album</a></li>
+        <li class="nav-item mb-2"><a href="/blog/search" class="nav-link">Search</a></li>
+        <li class="nav-item mb-2"><a href="/blog" class="nav-link">Blog</a></li>
         <li class="nav-item mb-2"><a href="/profile" class="nav-link">Profile</a></li>
-        <li class="nav-item mb-2"><a href="/logout" class="nav-link">Logout</a></li>
+        <li class="nav-item mb-2">
+            {{-- ログアウト用の隠しフォーム --}}
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+                @method('DELETE')
+            </form>
+
+            {{-- リンクをクリックした時にJavaScriptで上のフォームを送信 --}}
+            <a href="javascript:void(0);" 
+            class="nav-link" 
+            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                Logout
+            </a>
+        </li>
     </ul>
 </nav>
 <style type="text/css">
@@ -16,13 +29,13 @@
         max-height: none;
         margin:0;
         padding: 0;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .sidebar {
         width: 20%;
         height: 100vh;
         background-color: gray;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .body {
         padding: 10px;

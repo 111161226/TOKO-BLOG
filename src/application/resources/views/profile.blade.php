@@ -1,99 +1,82 @@
-@include('functions')
-<?php
-    $pdo = connectDB();
-    $err_msg = '';
-    
-    //get all blogs from db
-    try{
-        $sql = 'SELECT user_name, image_id FROM `users` INNER JOIN user_thumnail ON u_id = user_id WHERE user_id = :user_id';
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
-        $stmt->execute();
-        $user = $stmt->fetch();
-    } catch(Exception $error){
-        echo "failed to get user info" . $error->getMessage();
-        exit();
-    }
-?>
+@extends('layouts.app')
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="utf-8">
-    <title></title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <style type="text/css">
-        #head {
-            text-align : center;
-            background-color:#1e93c1;
-        }
-        #btn {
-            margin-left: 300px;
-        }
-        #preview {
-            border-radius: 50%;  /* turn into radius */
-            width:  200px;       /* set width */
-            height: 180px;       /* set height */
-        }
-        #thum {
-            margin-left: 50px;
-        } 
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="sidebar">
-        @include('sidebar')  
-    </div>
-    <div class="body">
-        <h1 id="head">プロフィール</h1>
-        <div class="d-flex align-items-center justify-content-center">
-            <form method="post" enctype="multipart/form-data">
+@section('title', 'Profile')
+@section('header_title', 'プロフィール設定')
+
+@push('css')
+<style>
+    /* プレビュー画像自体をボタンにするスタイル */
+    .image-upload-wrapper {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .image-upload-wrapper:hover #preview {
+        opacity: 0.7; /* ホバー時に少し暗くして「押せる」感を出す */
+    }
+    .image-upload-wrapper::after {
+        content: '変更';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        background: rgba(0,0,0,0.5);
+        padding: 5px 10px;
+        border-radius: 5px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+    }
+    .image-upload-wrapper:hover::after {
+        opacity: 1;
+    }
+    #preview {
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 3px solid #007bff;
+        transition: opacity 0.3s;
+    }
+</style>
+@endpush
+
+@section('content')
+<div class="profile-card">
+    <div class="card shadow">
+        <div class="card-body">
+            <form action="{{ route('user.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <div class="form-group"> 
-                    <div>
-                        <label>
-                            ユーザー名： <input type="text" name="username" value="<?= $user['user_name'];?>" required>
-                        </label>
+                @method('PATCH')
+
+                <div class="text-center mb-4">
+                    {{-- 画像を包むラッパーをクリックしたら、隠した input が反応するようにする --}}
+                    <div class="image-upload-wrapper" onclick="document.getElementById('profileImage').click();">
+                        <img id="preview" src="{{ route('images.show', $user['thumnail_id']) }}" alt="現在のサムネイル">
+                        
+                        {{-- 実際の入力枠は hidden にして隠す --}}
+                        <input type="file" name="thumnail" id="profileImage" accept=".jpg,.jpeg,.png" style="display: none;" onchange="previewImage(this);">
                     </div>
-                    <div>
-                        <label>
-                            現在のパスワード： <input type="password" name="pass" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30" required>
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            新しいパスワード： <input type="password" name="newpass" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30">
-                        </label>
-                    </div>
-                    <p>
-                        サムネイル：
-                        <input type="hidden" name="tid" value="<?= $user['image_id'];?>">
-                        <input name="thumnail" type="file" accept=".jpg,.jpeg,.png" onchange="previewImage(this);">
-                        <p class="text-center" id="thum">
-                            <img id="preview" src="thumnail?id=<?= $user['image_id']; ?>" class="mr-3"> 
-                            <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
-                        </p>
-                    </p>
-                    <p><input type="submit" id="btn" class="btn btn-primary" value="更新">
                 </div>
+
+                {{-- 他の入力項目 --}}
+                <div class="form-group text-center mb-4">
+                    <label>
+                        ユーザー名： <input type="text" name="username" value="{{ old('username', $user['user_name']) }}" required>
+                    </label>
+                    <br>
+                    <label>
+                        現在のパスワード： <input type="password" name="current_password" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30">
+                    </label>
+                    <br>
+                    <label>
+                        新しいパスワード： <input type="password" name="new_password" pattern="^[a-zA-Z0-9]+$" minlength="8" maxlength="30">
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block mt-4">更新</button>
             </form>
         </div>
     </div>
 </div>
-
-<script>
-function previewImage(obj)
-{
-	var fileReader = new FileReader();
-	fileReader.onload = (function() {
-		document.getElementById('preview').src = fileReader.result;
-	});
-	fileReader.readAsDataURL(obj.files[0]);
-}
-</script>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</body>
-</html>
+@endsection

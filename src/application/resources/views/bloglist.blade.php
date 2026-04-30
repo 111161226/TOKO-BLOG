@@ -1,111 +1,112 @@
-@include('functions')
-<?php
-    $pdo = connectDB();
-    $err_msg = '';
-    
-    //get all blogs from db
-    try{
-        $sql = 'SELECT `blog_id`, `title`, `thumnail_id` FROM `blogs` INNER JOIN blog_owner ON b_id = blog_id WHERE author_id = :user_id ORDER BY `created_at` DESC';
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':user_id', $_SESSION['id'], PDO::PARAM_STR);
-        $stmt->execute();
-        $blogs = $stmt->fetchAll();
-    } catch(Exception $error){
-        echo "failed to get blogs" . $error->getMessage();
-        exit();
-    }
-?>
+@extends('layouts.app')
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="utf-8">
-    <title>ブログ一覧</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <style type="text/css">
-        #head {
-            text-align : center;
-            background-color:#1e93c1;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="sidebar">
-        @include('sidebar')  
-    </div>
-    <div class="body">
-        <div class="row">
-            <div class="col-md-8 border-right">
-                <!-- show blog -->
-                <h1 id="head"> ブログ一覧 </h1>
-                <?php if (count($blogs) == 0): ?>
-                    <h4> ブログはありません </h4>
-                <?php endif; ?>
-                <ul class="list-unstyled">
-                    @csrf
-                    <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                        <li class="media mt-5">
-                            <a href="#lightbox" data-toggle="modal" data-slide-to="<?= $i; ?>">
-                                <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" width="80" height="auto" class="mr-3">
+@section('title', 'ブログ一覧')
+@section('header_title', 'マイブログ')
+
+@section('content')
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-9 border-right">
+            <div class="row">
+                @forelse ($blogs as $i => $blog)
+                    <div class="col-6 col-sm-4 col-lg-3 mb-4">
+                        <div class="card h-100 shadow-sm border-0 bg-light">
+                            {{-- 画像クリックでモーダル起動 --}}
+                            <a href="#lightbox" data-toggle="modal" data-slide-to="{{ $i }}" class="d-block">
+                                <div class="card-img-top-wrapper" style="height: 150px; overflow: hidden; background: #ddd;">
+                                    <img src="{{ route('images.show', $blog->thumnail_id) }}" class="w-100 h-100" style="object-fit: cover;">
+                                </div>
                             </a>
-                            <div class="media-body">
-                            <h3> 
-                                <a href="/sblog?id=<?= $blogs[$i]['blog_id']; ?>">
-                                    <?= $blogs[$i]['title']; ?>
-                            </a>
-                            </h3>
-                                <a href="javascript:void(0);" 
-                                onclick="var ok = confirm('削除しますか？'); if (ok) location.href='/dblog?id=<?= $blogs[$i]['blog_id']; ?>'">
-                                <i class="far fa-trash-alt"></i> 削除</a>
+                            <div class="card-body p-2 text-center">
+                                <h3 class="h6 font-weight-bold text-truncate mb-1">
+                                    <a href="{{ route('blog.show', $blog->blog_id) }}" class="text-dark">
+                                        {{ $blog->title }}
+                                    </a>
+                                </h3>
+                                <form action="{{ route('blog.destroy', $blog->blog_id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('本当に削除しますか？')">
+                                        <i class="far fa-trash-alt"></i> 削除
+                                    </button>
+                                </form>
                             </div>
-                        </li>
-                    <?php endfor; ?>
-                </ul>
-            </div>
-            <!-- add article -->
-            <div class="col-md-4 pt-4 pl-4">
-                <button onclick="location.href='/mblog'" class="btn btn-primary">追加</button>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-12 text-center py-5 text-muted">ブログはありません</div>
+                @endforelse
             </div>
         </div>
-    </div>
-</div>
 
-<!-- show thumnail ver Enlarge -->
-<div class="modal carousel slide" id="lightbox" tabindex="-1" role="dialog" data-ride="carousel">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <ol class="carousel-indicators">
-            <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                <li data-target="#lightbox" data-slide-to="<?= $i; ?>" <?php if ($i == 0) echo 'class="active"'; ?>></li>
-            <?php endfor; ?>
-        </ol>
-
-        <div class="carousel-inner">
-            <?php for ($i = 0; $i < count($blogs); $i++): ?>
-                <div class="carousel-item <?php if ($i == 0) echo 'active'; ?>">
-                <img src="image?id=<?= $blogs[$i]['thumnail_id']; ?>" class="d-block w-100">
+        <div class="col-md-3 pt-4 pl-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-body text-center">
+                    <a href="{{ route('blog.create') }}" class="btn btn-primary btn-block mb-2">
+                        <i class="fas fa-pen"></i> ブログを書く
+                    </a>
+                    <p class="small text-muted mt-3">新しい記事を作成して公開しましょう。</p>
                 </div>
-            <?php endfor; ?>
+            </div>
         </div>
-
-        <a class="carousel-control-prev" href="#lightbox" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#lightbox" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-      </div>
     </div>
-  </div>
 </div>
 
+<div class="modal fade" id="lightbox" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 text-center">
+                <div id="lightboxCarousel" class="carousel slide" data-ride="false" data-interval="false">
+                    <div class="carousel-inner">
+                        @foreach($blogs as $i => $blog)
+                            <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
+                                <img src="{{ route('images.show', $blog->thumnail_id) }}" class="img-fluid custom-modal-img shadow-lg">
+                            </div>
+                        @endforeach
+                    </div>
+                    <a class="carousel-control-prev custom-arrow" href="#lightboxCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    </a>
+                    <a class="carousel-control-next custom-arrow" href="#lightboxCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</body>
-</html>
+@push('css')
+<style>
+.card-img-top-wrapper img { transition: transform 0.3s; }
+.card-img-top-wrapper img:hover { transform: scale(1.05); }
+
+.custom-modal-img {
+    max-height: 70vh;
+    object-fit: contain;
+    border: 2px solid #fff;
+    background-color: #000;
+}
+
+.custom-arrow { width: 10%; opacity: 0.8; }
+.carousel-control-prev-icon, .carousel-control-next-icon {
+    background-color: rgba(0,0,0,0.6);
+    border-radius: 50%;
+    padding: 20px;
+}
+.modal-backdrop.show { opacity: 0.85 !important; }
+</style>
+@endpush
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // サムネイル画像（aタグ）をクリックしたとき
+    $('a[data-toggle="modal"]').on('click', function() {
+        // data-slide-to属性から、何番目の画像かを取得
+        var slideTo = $(this).attr('data-slide-to');
+        $('#lightbox').carousel(parseInt(slideTo));
+    });
+});
+</script>
+@endpush
+@endsection
