@@ -42,7 +42,7 @@
                     <form action="{{ route('images.store') }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
-                            <input type="file" name="image" class="form-control-file @error('image') is-invalid @enderror">
+                            <input type="file" name="image[]" class="form-control-file @error('image.*') is-invalid @enderror" multiple>
                             @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
